@@ -22,14 +22,14 @@
 
 
 // Constants
-const SCREEN_WIDTH = 600;
-const SCREEN_HEIGHT = 600;
+const SCREEN_WIDTH = 400;
+const SCREEN_HEIGHT = 400;
 const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 100;
 const FUDGE_FACTOR = 10;
 
 const ACTUAL_GRID_SIZE = 1000
 
-const GRID_BOX_SIZE = 25;
+const GRID_BOX_SIZE = 40;
 const GRID_SIZE_XY = ACTUAL_GRID_SIZE / GRID_BOX_SIZE;
 
 // Color Pallet
@@ -50,9 +50,7 @@ const GAME_DARK_GRAY = "#317171";
 var CUSTOM_ICON = null
 
 // Image
-var hero_img1 = null
-var screen_img1 = null
-// -----------------
+let screen_img1 
 
 const GAME_BOARD =
     [["                                        "],
@@ -130,6 +128,7 @@ class GameState {
                 this.screen1.draw()
 
                 if(this.screen1.isComplete()) this.state = "start"
+
                 
                 break;
             case "start":
@@ -266,47 +265,11 @@ class GameState {
     }
 }
 
-class FadeInScreen {
-    constructor(src) {
-        this.src = src
-        this.alpha = 0
-        this.fadeIn = true
-        this.fadeOut = false
-    }
-
-    draw() {
-        if (this.fadeIn) {
-            this.alpha += 5
-            if (this.alpha >= 255) {
-                this.fadeIn = false
-                this.fadeOut = true
-            }
-        }
-        else if (this.fadeOut) {
-            this.alpha -= 5
-            if (this.alpha <= 0) {
-                this.fadeIn = false
-                this.fadeOut = false
-            }
-        }
-        tint(255, this.alpha)
-        image(this.src, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-    }
-
-    isComplete()
-    {
-        return !this.fadeIn && !this.fadeOut
-    }
-}
-
-
 class Grid {
     constructor(rows, cols, cellSize) {
         this.rows = rows;
         this.cols = cols;
         this.cellSize = cellSize;
-
-        console.log("Rows: " + this.rows + " Cols: " + this.cols + " Cell Size: " + this.cellSize);
     }
 
     draw() {
@@ -369,134 +332,6 @@ class GameBoard extends Grid {
     }
 }
 
-class GridDefinedCharacter {
-    constructor(x, y) {
-        this.x = x
-        this.y = y
-        this.lookAheadResult = "all clear"
-        this.direction = 0;
-        this.speed = 0;
-        this.gridPosX = 0;
-        this.gridPosY = 0;
-        this.direction_x = null
-        this.direction_y = null
-        this.predictionQuad = new PredictionQuad(0, 0, GRID_BOX_SIZE)
-        this.obstacles = []
-        this.shownQuad = false
-    }
-
-    setPosition(x, y) {
-        this.boundX = null
-        this.boundY = null
-        this.x = x;
-        this.y = y;
-    }
-
-    setGridPosition(x, y) {
-        this.x = x * GRID_BOX_SIZE + GRID_BOX_SIZE / 2;
-        this.y = y * GRID_BOX_SIZE + GRID_BOX_SIZE / 2;
-        this.gridPosX = x;
-        this.gridPosY = y;
-    }
-
-    isFirmlyInGrid() {
-        if (((this.x + GRID_BOX_SIZE / 2) % GRID_BOX_SIZE == 0) && ((this.y + GRID_BOX_SIZE / 2) % GRID_BOX_SIZE == 0)) {
-            this.gridPosX = (this.x + GRID_BOX_SIZE / 2) / GRID_BOX_SIZE - 1;
-            this.gridPosY = (this.y + GRID_BOX_SIZE / 2) / GRID_BOX_SIZE - 1;
-            return true;
-        }
-        return false
-    }
-
-    setBounds(x, y) {
-        this.boundX = x;
-        this.boundY = y;
-    }
-
-    applyBounds() {
-        if (this.boundX != null && this.boundY != null) {
-            this.x = constrain(this.x, GRID_BOX_SIZE / 2, this.boundX - GRID_BOX_SIZE / 2);
-            this.y = constrain(this.y, GRID_BOX_SIZE / 2, this.boundY - GRID_BOX_SIZE / 2);
-        }
-    }
-
-    setObstacles(obstacles) {
-        this.obstacles = obstacles;
-        this.predictionQuad.setObstacles(obstacles)
-    }
-
-    safeToMove() {
-        if (this.obstacles.length != 0) {
-            for (var i = 0; i < this.obstacles.length; i++) {
-                if (this.direction == 0 && this.gridPosX + 1 == (this.obstacles[i].gridPosX) && this.gridPosY == this.obstacles[i].gridPosY) {
-                    return false
-                }
-                else if (this.direction == PI && this.gridPosX - 1 == (this.obstacles[i].gridPosX) && this.gridPosY == this.obstacles[i].gridPosY) {
-                    return false
-                }
-                else if (this.direction == (3 * HALF_PI) && this.gridPosY - 1 == (this.obstacles[i].gridPosY) && this.gridPosX == this.obstacles[i].gridPosX) {
-                    return false
-                }
-                else if (this.direction == HALF_PI && this.gridPosY + 1 == (this.obstacles[i].gridPosY) && this.gridPosX == this.obstacles[i].gridPosX) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    checkKeyPressed() {
-        // Check if an arrow key is pressed
-        if (keyIsPressed) {
-            if (keyIsDown(LEFT_ARROW)) {
-                this.cachedKey = LEFT_ARROW;
-            } else if (keyIsDown(RIGHT_ARROW)) {
-                this.cachedKey = RIGHT_ARROW;
-            } else if (keyIsDown(UP_ARROW)) {
-                this.cachedKey = UP_ARROW;
-            } else if (keyIsDown(DOWN_ARROW)) {
-                this.cachedKey = DOWN_ARROW;
-            } else if (keyIsDown(32)) {
-                this.cachedKey = 32
-            }
-        }
-    }
-
-
-    closeToAnObstacle() {
-        if (this.obstacles.length != 0) {
-            for (var i = 0; i < this.obstacles.length; i++) {
-                if (dist(this.x, this.y, this.obstacles[i].x, this.obstacles[i].y) < GRID_BOX_SIZE && this.obstacles[i].shown) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    move() {
-        //Update the grid position
-        if (this.isFirmlyInGrid())
-        {
-            this.gridPosX = (this.x + GRID_BOX_SIZE / 2) / GRID_BOX_SIZE - 1;
-            this.gridPosY = (this.y + GRID_BOX_SIZE / 2) / GRID_BOX_SIZE - 1;
-        }
-    }
-
-    showPredictionQuad() {
-        this.shownQuad = true
-    }
-
-    hidePredictionQuad() {
-        this.shownQuad = false
-    }
-
-    togglePredictions()
-    {
-        this.shownQuad = !this.shownQuad
-    }
-
-}
 
 class Logo {
     constructor(x, y, w, h, c, size) {
@@ -727,137 +562,6 @@ const GhostStateEnums =
     CHASE : "0",
 }
 
-class Pacman extends GridDefinedCharacter {
-    constructor(x, y, radius) {
-        super(x, y)
-        this.radius = radius / 2;
-        this.mouthAngle = QUARTER_PI; // Start with an open mouth
-        this.speed = GRID_BOX_SIZE / 10; // Pacman's movement speed
-        this.mouthSpeed = 5
-        this.direction_x = 0; // Direction of movement
-        this.direction_y = 0
-        this.boundX = null;
-        this.boundY = null;
-        this.points = 0
-
-        this.state = "alive"
-        this.enemies = null
-        this.state2 = "idle"
-
-        // possible options for this state:
-        // left, down, right, up
-        this.directionState = "left"
-
-        this.rockLives = 3
-
-        this.boundX = ACTUAL_GRID_SIZE
-        this.boundY = ACTUAL_GRID_SIZE
-
-        this.image = hero_img1
-    }
-
-    fsm()
-    {
-        switch(this.state2)
-        {
-            case "idle":
-                // wait until the user presses a key
-                if (this.cachedKey != null)
-                {
-                    this.state2 = "moving"
-                    this.keyCheck()   
-                }
-                else
-                {
-                    this.speed = 0
-                }
-                break;
-            case "moving":
-                this.x = this.x + this.direction_x * this.speed;
-                this.y = this.y + this.direction_y * this.speed;
-                this.applyBounds()
-                // print out the current grid position
-                if (this.isFirmlyInGrid())
-                {
-                    this.speed = 0
-                }
-
-                if (this.isFirmlyInGrid() && this.cachedKey == null) {
-                    this.state2 = "idle"
-                    this.speed = 0
-                }
-                else if (this.isFirmlyInGrid() && this.cachedKey != null) {
-                    this.keyCheck()
-                }
-                this.cachedKey = null
-                break;
-
-        }
-    }
-
-    keyCheck()
-    {
-        if (this.cachedKey == LEFT_ARROW) {
-            this.direction = PI
-        }
-        // right arrow, set direction right and move right
-        else if (this.cachedKey == RIGHT_ARROW) {
-            this.direction = 0
-        }
-        // up arrow, set direction up and move up
-        else if (this.cachedKey == UP_ARROW) {
-            this.direction = 3 * PI / 2
-        }
-        // down arrow, set direction down and move down
-        else if (this.cachedKey == DOWN_ARROW) {
-            this.direction = PI / 2
-        }      
-        this.cachedKey = null
-        this.speed = GRID_BOX_SIZE / 10
-        this.direction_x = cos(this.direction);
-        this.direction_y = sin(this.direction);
-    }
-
-    move() {
-        this.checkKeyPressed()
-        this.fsm()
-    }
-
-
-    draw() {
-        // Draw Pacman
-        push()
-        translate(this.x, this.y)
-        rotate(this.direction)
-        fill(255, 255, 0);
-        arc(0, 0, this.radius * 2, this.radius * 2, this.mouthAngle, - this.mouthAngle, PIE);
-        this.updateMouth();
-        pop()
-
-        // draw the image
-        push()
-        translate(this.x - this.radius, this.y - this.radius)
-        // rotate(this.direction)
-        image(this.image, 0, 0)
-        this.image.resize(GRID_BOX_SIZE, GRID_BOX_SIZE);
-        pop()
-    }
-
-    updateMouth() {
-        // Animate Pacman's mouth
-        this.mouthAngle = map(sin(frameCount * (1 / this.mouthSpeed)), -1, 1, QUARTER_PI, 0);
-    }
-
-    setEnemies(enemies) {
-        this.enemies = enemies
-    }
-
-    reset() {
-        this.points = 0
-        this.state = "alive"
-    }
-}
-
 class Rock extends GridDefinedCharacter {
     constructor(x, y, size) {
         super(x, y)
@@ -993,7 +697,6 @@ class PredictionQuad {
 }
 
 function preload() {
-    hero_img1 = loadImage('assets/Characters/hero/hero.png');
     screen_img1 = loadImage("assets/Screens/Screen1.png")
 }
 
@@ -1013,4 +716,8 @@ function setup() {
 
 function draw() {
     game.draw()
+
+    // draw both preloaded images
+    // image(screen_img1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+    // image(hero_img1, 0, 0, 50, 50)
 }
