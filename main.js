@@ -93,13 +93,13 @@ const GAME_BOARD =
 // Variables
 class GameState {
     constructor() {
-        this.state = "opening_screen"
+        this.state = "start"
         this.logo = new Logo(130, 100, 40, 50, color(GAME_BLACK), 2);
-        this.button = new Button(20, BOTTOM_OF_SCREEN - 20, 50, 30, "Play");
-        this.button2 = new Button(20, BOTTOM_OF_SCREEN + 15, 90, 30, "Instructions");
+        this.button = new Button(20, BOTTOM_OF_SCREEN - 60, 50, 30, "Play");
+        this.button2 = new Button(20, BOTTOM_OF_SCREEN - 25, 90, 30, "Instructions");
         // this.button3 = new Button(20, BOTTOM_OF_SCREEN + 50, 120, 30, "Testing Ground");
 
-        this.skewedCube = new SkewedCube(100, 100, 150)
+        // this.skewedCube = new SkewedCube(100, 100, 150)
         this.backButton = new Button(10, 10, 50, 30, "Back")
         this.number_of_enemies = 0
 
@@ -124,14 +124,14 @@ class GameState {
                 background(color(GAME_BLACK));
                 this.screen1.draw()
 
-                if(this.screen1.isComplete()) this.state = "start"
+                if (this.screen1.isComplete()) this.state = "start"
 
-                
+
                 break;
             case "start":
                 background(color(forsyth_blue));
-                this.skewedCube.display()
-                this.logo.draw();
+                // this.skewedCube.display()
+                // this.logo.draw();
                 this.button.draw();
                 this.button2.draw();
                 // this.button3.draw();
@@ -486,11 +486,11 @@ class SkewedCube {
     }
 }
 
-const GhostStateEnums = 
+const GhostStateEnums =
 {
     WANDER: "2",
-    AVOID_ROCK : "1",
-    CHASE : "0",
+    AVOID_ROCK: "1",
+    CHASE: "0",
 }
 
 class Rock extends GridDefinedCharacter {
@@ -585,8 +585,7 @@ class PredictionQuad {
         if (bool) {
             stroke(255, 0, 0)
         }
-        else
-        {
+        else {
             stroke(100, 255, 100)
         }
     }
@@ -603,7 +602,7 @@ class PredictionQuad {
 
         // left
         this.helperDraw(this.scanner[2])
-        rect(this.x - 2*this.size, this.y, this.size, this.size)
+        rect(this.x - 2 * this.size, this.y, this.size, this.size)
 
         // up
         this.helperDraw(this.scanner[0])
@@ -611,7 +610,7 @@ class PredictionQuad {
 
         // down
         this.helperDraw(this.scanner[1])
-        rect(this.x - this.size, this.y + this.size, this.size, this.size) 
+        rect(this.x - this.size, this.y + this.size, this.size, this.size)
     }
 
     isDetected() {

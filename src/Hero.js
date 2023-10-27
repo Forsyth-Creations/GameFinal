@@ -3,7 +3,7 @@ class Pacman extends GridDefinedCharacter {
         super(x, y)
         this.radius = radius / 2;
         this.mouthAngle = QUARTER_PI; // Start with an open mouth
-        this.speed = GRID_BOX_SIZE / 10; // Pacman's movement speed
+        this.speed = GRID_BOX_SIZE / 5; // Pacman's movement speed
         this.mouthSpeed = 5
         this.direction_x = 0; // Direction of movement
         this.direction_y = 0
@@ -20,40 +20,46 @@ class Pacman extends GridDefinedCharacter {
         this.directionState = "down"
         this.direction = PI / 2
 
-        this.rockLives = 3
-
         this.boundX = ACTUAL_GRID_SIZE
         this.boundY = ACTUAL_GRID_SIZE
 
         this.image = loadImage('assets/Characters/hero/hero.png');
 
-        this.speaking = true
+        this.speaking = false
         this.speech = "Hello there"
+
+
+        this.rightSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Right.png', 2)
+        this.leftSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Left.png', 2)
+        this.upSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Up.png', 2)
+        this.downSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Down.png', 2)
+
+
+        this.animationCounter = 0
+        this.animationCounter = constrain(this.animationCounter, 0, 3)
     }
 
-    fsm()
-    {
-        switch(this.state2)
-        {
+    fsm() {
+        switch (this.state2) {
             case "idle":
+                this.animationCounter = 0
                 // wait until the user presses a key
-                if (this.cachedKey != null)
-                {
+                if (this.cachedKey != null) {
                     this.state2 = "moving"
-                    this.keyCheck()   
+                    this.keyCheck()
                 }
-                else
-                {
+                else {
                     this.speed = 0
                 }
                 break;
             case "moving":
                 this.x = this.x + this.direction_x * this.speed;
                 this.y = this.y + this.direction_y * this.speed;
+                this.animationCounter = this.animationCounter + 0.2
+
                 this.applyBounds()
                 // print out the current grid position
-                if (this.isFirmlyInGrid())
-                {
+                if (this.isFirmlyInGrid()) {
                     this.speed = 0
                 }
 
@@ -70,8 +76,32 @@ class Pacman extends GridDefinedCharacter {
         }
     }
 
-    keyCheck()
-    {
+    handleAnimation() {
+        // draw the imag
+        push()
+        fill(color(GAME_BLACK))
+        translate(this.x - (1.7 * this.radius), this.y - (1.7 * this.radius))
+        if (this.direction == PI) {
+            this.leftSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // right arrow, set direction right and move right
+        else if (this.direction == 0) {
+            this.rightSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // up arrow, set direction up and move up
+        else if (this.direction == 3 * PI / 2) {
+            // up arrow
+            this.upSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // down arrow, set direction down and move down
+        else if (this.direction == PI / 2) {
+            // down arrow
+            this.downSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        pop()
+    }
+
+    keyCheck() {
         if (this.cachedKey == LEFT_ARROW) {
             this.direction = PI
         }
@@ -86,7 +116,7 @@ class Pacman extends GridDefinedCharacter {
         // down arrow, set direction down and move down
         else if (this.cachedKey == DOWN_ARROW) {
             this.direction = PI / 2
-        }      
+        }
         this.cachedKey = null
         this.speed = GRID_BOX_SIZE / 10
         this.direction_x = cos(this.direction);
@@ -100,17 +130,12 @@ class Pacman extends GridDefinedCharacter {
 
 
     draw() {
-        
-        // draw the image
-        push()
-        fill(color(GAME_BLACK))
-        translate(this.x - this.radius, this.y - this.radius)
-        // rotate(this.direction)
-        image(this.image, 0, 0, GRID_BOX_SIZE, GRID_BOX_SIZE)
-        pop()
+        this.handleAnimation()
 
-        if (this.speaking)
-        {
+        if (this.animationCounter > 3) {
+            this.animationCounter = 0
+        }
+        if (this.speaking) {
             // draw a speech bubble
             push()
             fill(color(GAME_WHITE))
