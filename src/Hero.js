@@ -26,6 +26,9 @@ class Pacman extends GridDefinedCharacter {
         this.boundY = ACTUAL_GRID_SIZE
 
         this.image = loadImage('assets/Characters/hero/hero.png');
+
+        this.speaking = true
+        this.speech = "Hello there"
     }
 
     fsm()
@@ -106,14 +109,21 @@ class Pacman extends GridDefinedCharacter {
         image(this.image, 0, 0, GRID_BOX_SIZE, GRID_BOX_SIZE)
         pop()
 
-        // Draw Pacman
-        push()
-        // draw a circle
-        stroke(color(GAME_YELLOW))
-        strokeWeight(2)
-        noFill()
-        ellipse(this.x, this.y, this.radius * 2, this.radius * 2)
-        pop()
+        if (this.speaking)
+        {
+            // draw a speech bubble
+            push()
+            fill(color(GAME_WHITE))
+            stroke(color(GAME_BLACK))
+            strokeWeight(1)
+            translate(this.x - this.radius, this.y - this.radius)
+            rect(0, -GRID_BOX_SIZE, GRID_BOX_SIZE * 2, GRID_BOX_SIZE)
+            fill(color(GAME_BLACK))
+            noStroke()
+            textSize(10)
+            text(this.speech, GRID_BOX_SIZE, -GRID_BOX_SIZE / 2)
+            pop()
+        }
     }
 
     updateMouth() {
@@ -128,5 +138,10 @@ class Pacman extends GridDefinedCharacter {
     reset() {
         this.points = 0
         this.state = "alive"
+    }
+
+    say(text) {
+        this.speaking = true
+        this.speech = text
     }
 }

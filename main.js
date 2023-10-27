@@ -22,8 +22,8 @@
 
 
 // Constants
-const SCREEN_WIDTH = 400;
-const SCREEN_HEIGHT = 400;
+const SCREEN_WIDTH = 500;
+const SCREEN_HEIGHT = SCREEN_WIDTH;
 const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 100;
 const FUDGE_FACTOR = 10;
 
@@ -48,9 +48,6 @@ const GAME_YELLOW = "#F0C808";
 const GAME_DARK_GRAY = "#317171";
 
 var CUSTOM_ICON = null
-
-// Image
-let screen_img1 
 
 const GAME_BOARD =
     [["                                        "],
@@ -113,7 +110,7 @@ class GameState {
         this.gameboard = new GameBoard(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE)
 
         // import screen 1 from /assets/Screens/Screen1.png
-        this.screen1 = new FadeInScreen(screen_img1)
+        this.screen1 = new FadeInScreen(loadImage("assets/Screens/Screen1.png"))
     }
 
     draw() {
@@ -265,72 +262,6 @@ class GameState {
     }
 }
 
-class Grid {
-    constructor(rows, cols, cellSize) {
-        this.rows = rows;
-        this.cols = cols;
-        this.cellSize = cellSize;
-    }
-
-    draw() {
-        for (let i = 0; i < this.cols; i++) {
-            for (let j = 0; j < this.rows; j++) {
-                let x = i * this.cellSize;
-                let y = j * this.cellSize;
-                stroke(0);
-                noFill();
-                rect(x, y, this.cellSize, this.cellSize);
-            }
-        }
-    }
-}
-
-class GameBoard extends Grid {
-    constructor(rows, cols, cellSize) {
-        super(rows, cols, cellSize);
-        this.grid = [];
-        this.rocks = [];
-        this.pacman = new Pacman(0, 0, this.cellSize);
-        this.createElements();
-    }
-
-    createElements() {
-        for (let i = 0; i < GAME_BOARD.length; i++) {
-            let row = GAME_BOARD[i][0].split("");
-            for (let j = 0; j < row.length; j++) {
-                let cell = row[j];
-                if (cell == "C") {
-                    drawPrize(0, 0)
-                }
-                else if (cell == "S") {
-                    let rock = new Rock(j, i, this.cellSize);
-                    rock.setGridPosition(j, i);
-                    this.rocks.push(rock);
-                }
-                else if (cell == "P") {
-                    this.pacman.setGridPosition(j, i);
-                    this.pacman.setBounds(this.cols * this.cellSize, this.rows * this.cellSize)
-                }
-            }
-        }
-        this.pacman.setObstacles(this.rocks);
-    }
-
-    draw() {
-        super.draw();
-        for (let i = 0; i < this.rocks.length; i++) {
-            this.rocks[i].draw();
-        }
-        this.pacman.move();
-        this.pacman.draw();
-    }
-
-    resetAll() {
-        this.rocks = []
-        this.pacman = new Pacman(0, 0, this.cellSize);
-        this.createElements()
-    }
-}
 
 
 class Logo {
@@ -694,10 +625,6 @@ class PredictionQuad {
     isOnX() {
         return this.scanner[2] || this.scanner[3]
     }
-}
-
-function preload() {
-    screen_img1 = loadImage("assets/Screens/Screen1.png")
 }
 
 // Setup the canvas
