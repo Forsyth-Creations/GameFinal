@@ -34,9 +34,11 @@ class Pacman extends GridDefinedCharacter {
         this.upSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Up.png', 2)
         this.downSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Down.png', 2)
 
-
         this.animationCounter = 0
         this.animationCounter = constrain(this.animationCounter, 0, 3)
+
+        this.pedometer = 0
+
     }
 
     fsm() {
@@ -71,6 +73,58 @@ class Pacman extends GridDefinedCharacter {
                     this.keyCheck()
                 }
                 this.cachedKey = null
+                break;
+            case "simIdle":
+                this.animationCounter = 0
+                this.pedometer = 0
+                this.state2 = "right"
+                this.direction = 0
+                this.speed = GRID_BOX_SIZE / 20
+                break;
+            case "right": 
+                this.pedometer = this.pedometer + this.speed
+                
+                this.x = this.x + cos(this.direction) * this.speed;
+                this.y = this.y + sin(this.direction) * this.speed;
+
+                this.animationCounter = this.animationCounter + 0.2
+                if (this.pedometer > GRID_BOX_SIZE) {
+                    this.state2 = "down"
+                    this.direction = 3 * PI / 2
+                    this.pedometer = 0
+                }
+                break;
+            case "down":
+                this.x = this.x + cos(this.direction) * this.speed;
+                this.y = this.y + sin(this.direction) * this.speed;
+                this.animationCounter = this.animationCounter + 0.2
+                this.pedometer = this.pedometer + this.speed
+                if (this.pedometer > GRID_BOX_SIZE) {
+                    this.state2 = "left"
+                    this.direction = PI
+                    this.pedometer = 0
+                }
+                break;
+            case "left":
+                this.x = this.x + cos(this.direction) * this.speed;
+                this.y = this.y + sin(this.direction) * this.speed;
+                this.animationCounter = this.animationCounter + 0.2
+                this.pedometer = this.pedometer + this.speed
+                if (this.pedometer > GRID_BOX_SIZE) {
+                    this.state2 = "up"
+                    this.direction = PI/2
+                    this.pedometer = 0
+                }
+                break;
+            case "up":
+                this.x = this.x + cos(this.direction) * this.speed;
+                this.y = this.y + sin(this.direction) * this.speed;
+                this.animationCounter = this.animationCounter + 0.2
+                this.pedometer = this.pedometer + this.speed
+                if (this.pedometer > GRID_BOX_SIZE) {
+                    this.state2 = "simIdle"
+                    this.pedometer = 0
+                }
                 break;
 
         }

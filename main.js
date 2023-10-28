@@ -137,6 +137,7 @@ class GameState {
                 image(this.hunt_logo, 20, 20)
 
                 // Hacky way of getting it to move
+                this.pacman.y = SCREEN_HEIGHT - 50
                 this.pacman.state2 = "moving"
                 this.pacman.direction = 0
                 this.pacman.x = this.pacman.x + 5
@@ -152,8 +153,8 @@ class GameState {
                 this.rock.setPosition(SCREEN_WIDTH / 1.35, SCREEN_HEIGHT / 1.5)
                 // draw a white recangle at the bottom of the screen
                 fill(color(GAME_WHITE))
-                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT - BOTTOM_OF_SCREEN) 
-                
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT - BOTTOM_OF_SCREEN)
+
 
                 if (this.button.getState() == "pressed") {
                     this.state = "game"
@@ -161,9 +162,13 @@ class GameState {
                 }
                 if (this.button2.getState() == "pressed") {
                     this.state = "instructions"
+                    this.pacman.setPosition(SCREEN_WIDTH * (3 / 4), SCREEN_HEIGHT * (3 / 4))
+                    this.pacman.state2 = "simIdle"
                 }
 
-                text("A game by  Henry Forsyth", SCREEN_WIDTH/1.3, BOTTOM_OF_SCREEN - 150)
+                text("A game by  Henry Forsyth", SCREEN_WIDTH / 1.3, BOTTOM_OF_SCREEN - 150)
+                text("A virtual homage to the", SCREEN_WIDTH / 1.3, BOTTOM_OF_SCREEN - 120)
+                text("Virginia Tech Hunt", SCREEN_WIDTH / 1.3, BOTTOM_OF_SCREEN - 90)
 
                 break;
             case "main_menu":
@@ -171,6 +176,21 @@ class GameState {
                 break;
             case "instructions":
                 background(color(GAME_BLACK));
+
+                // draw a grid around where I think the character will be walking
+                // just a 2x2
+                for (let i = 0; i < 2; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        let x = i * GRID_BOX_SIZE;
+                        let y = j * GRID_BOX_SIZE;
+                        stroke(2);
+                        stroke(color(GAME_WHITE))
+                        noFill();
+                        rect(x + 355, y + 315, GRID_BOX_SIZE, GRID_BOX_SIZE);
+                    }
+                }
+                noStroke()
+
                 this.backButton.draw()
                 if (this.backButton.getState() == "pressed") {
                     this.state = "start"
@@ -178,6 +198,10 @@ class GameState {
                     this.button2.reset()
                     this.backButton.reset()
                 }
+                this.pacman.draw()
+                this.pacman.handleAnimation()
+                this.pacman.fsm()
+
                 fill(255)
                 // align text left
                 textAlign(LEFT, CENTER);
@@ -191,8 +215,15 @@ class GameState {
 
                 text("Rekam demands it", 20, 330)
 
+                // Note, as seen on the right, this is a grid world
+                // you can only move in the grid, using your arrow keys
+
+                text("Note, as seen on the right, this is a grid world", 20, 400)
+                text("You can only move in the grid, using your arrow keys", 20, 430)
+
 
                 text("Good luck, have fun, don't die", 20, BOTTOM_OF_SCREEN)
+
 
                 break;
             case "game":
