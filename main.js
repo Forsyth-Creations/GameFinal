@@ -24,7 +24,7 @@
 // Constants
 const SCREEN_WIDTH = 500;
 const SCREEN_HEIGHT = SCREEN_WIDTH;
-const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 100;
+const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 30;
 const FUDGE_FACTOR = 10;
 
 const ACTUAL_GRID_SIZE = 1000
@@ -93,10 +93,10 @@ const GAME_BOARD =
 // Variables
 class GameState {
     constructor() {
-        this.state = "start"
+        this.state = "opening_screen"
         this.logo = new Logo(130, 100, 40, 50, color(GAME_BLACK), 2);
-        this.button = new Button(20, BOTTOM_OF_SCREEN - 60, 50, 30, "Play");
-        this.button2 = new Button(20, BOTTOM_OF_SCREEN - 25, 90, 30, "Instructions");
+        this.button = new Button(20, BOTTOM_OF_SCREEN - 140, 50, 30, "Play");
+        this.button2 = new Button(20, BOTTOM_OF_SCREEN - 100, 90, 30, "Instructions");
         // this.button3 = new Button(20, BOTTOM_OF_SCREEN + 50, 120, 30, "Testing Ground");
 
         // this.skewedCube = new SkewedCube(100, 100, 150)
@@ -104,13 +104,14 @@ class GameState {
         this.number_of_enemies = 0
 
         this.grid = new Grid(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE)
-        this.pacman = new Pacman(SCREEN_WIDTH / 1.2, SCREEN_HEIGHT / 1.2, GRID_BOX_SIZE)
+        this.pacman = new Pacman(5, SCREEN_HEIGHT - 50, GRID_BOX_SIZE)
         this.rock = new Rock(SCREEN_WIDTH / 1.35, SCREEN_HEIGHT / 1.5, GRID_BOX_SIZE, GAME_RED)
 
         this.gameboard = new GameBoard(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE)
 
         // import screen 1 from /assets/Screens/Screen1.png
         this.screen1 = new FadeInScreen(loadImage("assets/Screens/Screen1.png"))
+        this.hunt_logo = loadImage("assets/Logos/Hunt.png")
     }
 
     draw() {
@@ -123,23 +124,36 @@ class GameState {
                 // draw screen1
                 background(color(GAME_BLACK));
                 this.screen1.draw()
-
                 if (this.screen1.isComplete()) this.state = "start"
-
-
                 break;
             case "start":
-                background(color(forsyth_blue));
+                background(color(GAME_BLACK));
                 // this.skewedCube.display()
                 // this.logo.draw();
                 this.button.draw();
                 this.button2.draw();
                 // this.button3.draw();
-                this.pacman.setPosition(SCREEN_WIDTH / 1.2, SCREEN_HEIGHT / 1.2)
+                this.hunt_logo.resize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                image(this.hunt_logo, 20, 20)
+
+                // Hacky way of getting it to move
+                this.pacman.state2 = "moving"
+                this.pacman.direction = 0
+                this.pacman.x = this.pacman.x + 5
+                this.pacman.handleAnimation()
+                this.pacman.fsm()
+
+                // if the pacman is out of bounds, move it back
+                if (this.pacman.x > SCREEN_WIDTH) {
+                    this.pacman.x = -100
+                }
+
                 this.pacman.draw()
-                this.rock.draw()
                 this.rock.setPosition(SCREEN_WIDTH / 1.35, SCREEN_HEIGHT / 1.5)
-                // reset the fighter 
+                // draw a white recangle at the bottom of the screen
+                fill(color(GAME_WHITE))
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT - BOTTOM_OF_SCREEN) 
+                
 
                 if (this.button.getState() == "pressed") {
                     this.state = "game"
@@ -149,12 +163,14 @@ class GameState {
                     this.state = "instructions"
                 }
 
+                text("A game by  Henry Forsyth", SCREEN_WIDTH/1.3, BOTTOM_OF_SCREEN - 150)
+
                 break;
             case "main_menu":
                 // code block
                 break;
             case "instructions":
-                background(color(forsyth_blue));
+                background(color(GAME_BLACK));
                 this.backButton.draw()
                 if (this.backButton.getState() == "pressed") {
                     this.state = "start"
@@ -261,7 +277,6 @@ class GameState {
         }
     }
 }
-
 
 
 class Logo {
