@@ -1,26 +1,51 @@
 class Grid {
-    constructor(rows, cols, cellSize) {
+    constructor(rows, cols, cellSize, renderDistance) {
         this.rows = rows;
         this.cols = cols;
         this.cellSize = cellSize;
+        this.renderDistance = renderDistance;
+
+        this.image = loadImage('assets/Scenary/grass.jpg')
+        console.log("Render distance: " + this.renderDistance)
+
+        this.x_index = 0
+        this.y_index = 0
     }
 
     draw() {
-        for (let i = 0; i < this.cols; i++) {
-            for (let j = 0; j < this.rows; j++) {
+        // compute starting x and y, contrain to 0 to cols/rows
+
+        let start_x = constrain(this.x_index - this.renderDistance, 0, this.cols - 1)
+        let start_y = constrain(this.y_index - this.renderDistance, 0, this.rows - 1)
+        let max_x = constrain(this.x_index + this.renderDistance, 0, this.cols)
+        let max_y = constrain(this.y_index + this.renderDistance, 0, this.rows)
+
+        for (let i = start_x; i < max_x && i < this.cols; i++) {
+            for (let j = start_y; j < max_y && j < this.rows; j++) {
                 let x = i * this.cellSize;
                 let y = j * this.cellSize;
                 stroke(0);
                 noFill();
                 rect(x, y, this.cellSize, this.cellSize);
+                // write the grid location as text
+                fill(GAME_GRAY_HOVER);
+                textSize(12);
+                textAlign(CENTER, CENTER);
+                text(i + "," + j, x + this.cellSize / 2, y + this.cellSize / 2);
             }
         }
+    }
+
+    setPosition(x, y)
+    {
+        this.x_index = constrain(x, 0, this.cols - 1);
+        this.y_index = constrain(y, 0, this.rows - 1);
     }
 }
 
 class GameBoard extends Grid {
-    constructor(rows, cols, cellSize) {
-        super(rows, cols, cellSize);
+    constructor(rows, cols, cellSize, renderDistance) {
+        super(rows, cols, cellSize, renderDistance);
         this.grid = [];
         this.rocks = [];
         this.pacman = new Pacman(0, 0, this.cellSize);
@@ -28,8 +53,8 @@ class GameBoard extends Grid {
     }
 
     createElements() {
-        for (let i = 0; i < GAME_BOARD.length; i++) {
-            let row = GAME_BOARD[i][0].split("");
+        for (let i = 0; i < GAME_BOARD_1.length; i++) {
+            let row = GAME_BOARD_1[i][0].split("");
             for (let j = 0; j < row.length; j++) {
                 let cell = row[j];
                 if (cell == "C") {
@@ -51,9 +76,26 @@ class GameBoard extends Grid {
 
     draw() {
         super.draw();
-        for (let i = 0; i < this.rocks.length; i++) {
-            this.rocks[i].draw();
+
+        let start_x = constrain(this.x_index - this.renderDistance, 0, this.cols - 1)
+        let start_y = constrain(this.y_index - this.renderDistance, 0, this.rows - 1)
+        let max_x = constrain(this.x_index + this.renderDistance, 0, this.cols)
+        let max_y = constrain(this.y_index + this.renderDistance, 0, this.rows)
+
+        for (let i = start_x; i < max_x && i < this.cols; i++) {
+            for (let j = start_y; j < max_y && j < this.rows; j++) {
+                // draw the rock if it's grid position is within the render distance
+                for (let k = 0; k < this.rocks.length; k++) {
+                    if (this.rocks[k].gridPosX == i && this.rocks[k].gridPosY == j) {
+                        this.rocks[k].draw();
+                    }
+                }
+            }
         }
+
+        // for (let i = 0; i < this.rocks.length; i++) {
+        //     this.rocks[i].draw();
+        // }
         this.pacman.move();
         this.pacman.draw();
     }

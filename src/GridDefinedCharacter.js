@@ -124,5 +124,4 @@ class GridDefinedCharacter {
     {
         this.shownQuad = !this.shownQuad
     }
-
 }

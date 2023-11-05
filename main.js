@@ -1,95 +1,3 @@
-// Import a separate file for each class
-
-
-// Project Spec
-// Starting screen with your Logo from Project 0 (but you may change that Logo if you wish)
-// Click "start" button to begin game
-// Make the invaders look better (draw a better invader than the one provided in the class sample)
-// When the game begins, the invaders move like the ball in Pong. Each invader will start in a random direction and speed.
-// The invaders will bounce off of the borders, just like the Pong ball.
-// There is a gun at the BOTTOM_OF_SCREEN that you control with keyboard (A + D to move left and right). Spacebar to shoot.
-// If an invader is shot, it disappears.
-// The gun must avoid getting touched by any of the invaders.
-// No collision between the invaders. That is, an invader can pass through one another.
-// When an invader is in the top half of the canvas, it will have a small probability to drop a bomb. The initial position of the bomb should be slightly below the invader without touching the invader.
-// The bombs cannot kill invaders, but when a bomb hits an invader, the bomb disappears.
-// When a bomb touches the gun, game over.
-// When an invader touches the gun, game over.
-// When all the invaders are gone, you win.
-// You should also have a separate  game over screen.
-// If your program (1) has syntax errors or (2) cannot run - the grade will be 0. This will be true for all future projects.
-// Do NOT use any images, every object must be drawn using functions such as ellipse, rect, etc. This is true for all future projects.
-
-
-// Constants
-const SCREEN_WIDTH = 500;
-const SCREEN_HEIGHT = SCREEN_WIDTH;
-const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 30;
-const FUDGE_FACTOR = 10;
-
-const ACTUAL_GRID_SIZE = 1000
-
-const GRID_BOX_SIZE = 40;
-const GRID_SIZE_XY = ACTUAL_GRID_SIZE / GRID_BOX_SIZE;
-
-// Color Pallet
-// https://colorhunt.co/palette/040d12183d3d5c837493b1a6
-// https://colorhunt.co/palette/10316b000000e25822ececeb
-const forsyth_blue = "#204d71";
-const GAME_GRAY = "#93B1A6";
-const GAME_GRAY_HOVER = "#B6D3C9"
-const GAME_BLACK = "#040D12";
-const GAME_WHITE = "#ffffff";
-const GAME_RED = "#E25822";
-const GAME_RED_2 = "#F86E38";
-const GAME_GREEN = "#658864";
-const GAME_DARK_BLUE = "#00008B";
-const GAME_YELLOW = "#F0C808";
-const GAME_DARK_GRAY = "#317171";
-
-var CUSTOM_ICON = null
-
-const GAME_BOARD =
-    [["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["          P                             "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "]]
 // Variables
 class GameState {
     constructor() {
@@ -103,15 +11,17 @@ class GameState {
         this.backButton = new Button(10, 10, 50, 30, "Back")
         this.number_of_enemies = 0
 
-        this.grid = new Grid(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE)
+        // this.grid = new Grid(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE, 8)
         this.pacman = new Pacman(5, SCREEN_HEIGHT - 50, GRID_BOX_SIZE)
         this.rock = new Rock(SCREEN_WIDTH / 1.35, SCREEN_HEIGHT / 1.5, GRID_BOX_SIZE, GAME_RED)
 
-        this.gameboard = new GameBoard(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE)
+        this.gameboard = new GameBoard(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE, 6)
 
         // import screen 1 from /assets/Screens/Screen1.png
         this.screen1 = new FadeInScreen(loadImage("assets/Screens/Screen1.png"))
         this.hunt_logo = loadImage("assets/Logos/Hunt.png")
+
+        this.gearButton = new IconButton(SCREEN_WIDTH - 50, 10, 40, 40, "assets/Icons/gear2.png")
     }
 
     draw() {
@@ -248,6 +158,10 @@ class GameState {
                 if (this.gameboard.pacman.state == "dead") {
                     this.state = "game_over"
                 }
+                this.gearButton.draw()
+
+                // feed the pacman grid positiong to the grid
+                this.gameboard.setPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
 
                 break;
             case "testing_ground":
@@ -255,7 +169,7 @@ class GameState {
 
                 push()
                 translate(SCREEN_WIDTH / 2 - this.pacman.x, SCREEN_HEIGHT / 2 - this.pacman.y)
-                this.grid.draw()
+                // this.grid.draw()
                 if (this.backButton.getState() == "pressed") {
                     this.state = "start"
                     this.button.reset()
@@ -308,7 +222,6 @@ class GameState {
         }
     }
 }
-
 
 class Logo {
     constructor(x, y, w, h, c, size) {
@@ -406,84 +319,6 @@ class Logo {
     }
 }
 
-class Button {
-    constructor(x, y, w, h, text) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.text = text;
-        this.state = "idle" // options are idle, hover, pressed
-        this.locked = false
-        this.activeButtonColor = color(GAME_GRAY)
-        this.activeTextColor = color(GAME_BLACK)
-    }
-
-    fsm() {
-        switch (this.state) {
-            case "idle":
-                this.activeButtonColor = color(GAME_GRAY)
-                this.activeTextColor = color(GAME_BLACK)
-                if (this.mouseOver()) {
-                    this.state = "hover"
-                }
-                break;
-            case "hover":
-                this.activeButtonColor = color(GAME_GRAY_HOVER)
-                this.activeTextColor = color(GAME_BLACK)
-                if (!this.mouseOver()) {
-                    this.state = "idle"
-                }
-                else if (this.mouseOver() && this.mousePressed() && !this.locked) {
-                    this.state = "pressed"
-                    this.locked = true
-                }
-                // code block
-                break;
-            case "pressed":
-                break;
-            default:
-            // code block
-        }
-    }
-
-    getState() {
-        return this.state
-    }
-
-    draw() {
-        this.fsm()
-
-        this.mousePressed()
-        // draw a basic rectangle
-        fill(this.activeButtonColor);
-        rect(this.x, this.y, this.w, this.h, 5);
-        // draw the text
-        fill(this.activeTextColor)
-        // Align text center
-        textAlign(CENTER, CENTER);
-        textSize(15);
-        text(this.text, this.x + (this.w / 2), this.y + (this.h / 2));
-    }
-
-    // Handle when I mouse over the button
-    mouseOver() {
-        // if the mouse is over the button, change the color
-        return (mouseX > this.x && mouseX < this.x + this.w &&
-            mouseY > this.y && mouseY < this.y + this.h)
-    }
-
-    // Handle when I click the button
-    mousePressed() {
-        return mouseIsPressed && this.mouseOver()
-    }
-
-    reset() {
-        this.state = "idle"
-        this.locked = false
-    }
-}
-
 class SkewedCube {
     constructor(x, y, size) {
         this.x = x;
@@ -532,13 +367,7 @@ class SkewedCube {
     }
 }
 
-const GhostStateEnums =
-{
-    WANDER: "2",
-    AVOID_ROCK: "1",
-    CHASE: "0",
-}
-
+// 
 class Rock extends GridDefinedCharacter {
     constructor(x, y, size) {
         super(x, y)
@@ -688,8 +517,4 @@ function setup() {
 
 function draw() {
     game.draw()
-
-    // draw both preloaded images
-    // image(screen_img1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-    // image(hero_img1, 0, 0, 50, 50)
 }
