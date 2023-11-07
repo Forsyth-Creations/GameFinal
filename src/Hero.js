@@ -3,7 +3,7 @@ class Pacman extends GridDefinedCharacter {
         super(x, y)
         this.radius = radius / 2;
         this.mouthAngle = QUARTER_PI; // Start with an open mouth
-        this.speed = GRID_BOX_SIZE / 5; // Pacman's movement speed
+        this.speed = GRID_BOX_SIZE / 2; // Pacman's movement speed
         this.mouthSpeed = 5
         this.direction_x = 0; // Direction of movement
         this.direction_y = 0
@@ -38,6 +38,8 @@ class Pacman extends GridDefinedCharacter {
         this.animationCounter = constrain(this.animationCounter, 0, 3)
 
         this.pedometer = 0
+        this.pedometer_switch_val = 5
+        this.animationStep = 0.4
 
     }
 
@@ -57,7 +59,7 @@ class Pacman extends GridDefinedCharacter {
             case "moving":
                 this.x = this.x + this.direction_x * this.speed;
                 this.y = this.y + this.direction_y * this.speed;
-                this.animationCounter = this.animationCounter + 0.2
+                this.animationCounter = this.animationCounter + this.animationStep
 
                 this.applyBounds()
                 // print out the current grid position
@@ -79,7 +81,7 @@ class Pacman extends GridDefinedCharacter {
                 this.pedometer = 0
                 this.state2 = "right"
                 this.direction = 0
-                this.speed = GRID_BOX_SIZE / 20
+                this.speed = GRID_BOX_SIZE / 10
                 break;
             case "right": 
                 this.pedometer = this.pedometer + this.speed
@@ -87,8 +89,8 @@ class Pacman extends GridDefinedCharacter {
                 this.x = this.x + cos(this.direction) * this.speed;
                 this.y = this.y + sin(this.direction) * this.speed;
 
-                this.animationCounter = this.animationCounter + 0.2
-                if (this.pedometer > GRID_BOX_SIZE) {
+                this.animationCounter = this.animationCounter + this.animationStep
+                if (this.pedometer > this.pedometer_switch_val) {
                     this.state2 = "down"
                     this.direction = 3 * PI / 2
                     this.pedometer = 0
@@ -97,9 +99,9 @@ class Pacman extends GridDefinedCharacter {
             case "down":
                 this.x = this.x + cos(this.direction) * this.speed;
                 this.y = this.y + sin(this.direction) * this.speed;
-                this.animationCounter = this.animationCounter + 0.2
+                this.animationCounter = this.animationCounter + this.animationStep
                 this.pedometer = this.pedometer + this.speed
-                if (this.pedometer > GRID_BOX_SIZE) {
+                if (this.pedometer > this.pedometer_switch_val) {
                     this.state2 = "left"
                     this.direction = PI
                     this.pedometer = 0
@@ -108,9 +110,9 @@ class Pacman extends GridDefinedCharacter {
             case "left":
                 this.x = this.x + cos(this.direction) * this.speed;
                 this.y = this.y + sin(this.direction) * this.speed;
-                this.animationCounter = this.animationCounter + 0.2
+                this.animationCounter = this.animationCounter + this.animationStep
                 this.pedometer = this.pedometer + this.speed
-                if (this.pedometer > GRID_BOX_SIZE) {
+                if (this.pedometer > this.pedometer_switch_val) {
                     this.state2 = "up"
                     this.direction = PI/2
                     this.pedometer = 0
@@ -119,9 +121,9 @@ class Pacman extends GridDefinedCharacter {
             case "up":
                 this.x = this.x + cos(this.direction) * this.speed;
                 this.y = this.y + sin(this.direction) * this.speed;
-                this.animationCounter = this.animationCounter + 0.2
+                this.animationCounter = this.animationCounter + this.animationStep
                 this.pedometer = this.pedometer + this.speed
-                if (this.pedometer > GRID_BOX_SIZE) {
+                if (this.pedometer > this.pedometer_switch_val) {
                     this.state2 = "simIdle"
                     this.pedometer = 0
                 }
@@ -172,7 +174,7 @@ class Pacman extends GridDefinedCharacter {
             this.direction = PI / 2
         }
         this.cachedKey = null
-        this.speed = GRID_BOX_SIZE / 10
+        this.speed = GRID_BOX_SIZE / 5
         this.direction_x = cos(this.direction);
         this.direction_y = sin(this.direction);
     }

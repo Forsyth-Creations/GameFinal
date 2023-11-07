@@ -1,11 +1,11 @@
 class Grid {
-    constructor(rows, cols, cellSize, renderDistance) {
+    constructor(rows, cols, cellSize, renderDistance, image = null) {
         this.rows = rows;
         this.cols = cols;
         this.cellSize = cellSize;
         this.renderDistance = renderDistance;
 
-        this.image = loadImage('assets/Scenary/grass.jpg')
+        this.image = image
         console.log("Render distance: " + this.renderDistance)
 
         this.x_index = 0
@@ -24,14 +24,16 @@ class Grid {
             for (let j = start_y; j < max_y && j < this.rows; j++) {
                 let x = i * this.cellSize;
                 let y = j * this.cellSize;
-                stroke(0);
-                noFill();
-                rect(x, y, this.cellSize, this.cellSize);
-                // write the grid location as text
-                // fill(GAME_GRAY_HOVER);
-                // textSize(12);
-                // textAlign(CENTER, CENTER);
-                // text(i + "," + j, x + this.cellSize / 2, y + this.cellSize / 2);
+                if (this.image == null)
+                {
+                    // stroke(0);
+                    // noFill();
+                    // rect(x, y, this.cellSize, this.cellSize);
+                }
+                else
+                {
+                    image(grass, x, y, this.cellSize, this.cellSize)
+                }
             }
         }
     }
@@ -53,6 +55,7 @@ class GameBoard extends Grid {
         this.bitmap = bitmap;
         this.pacman = new Pacman(0, 0, this.cellSize);
         this.createElements();
+        this.grass_image = grass
     }
 
     createElements() {
@@ -71,9 +74,9 @@ class GameBoard extends Grid {
                     }
                     else if(cell == "B")
                     {
-                        let block = new GenericBlock(j, i, this.cellSize);
-                        block.setGridPosition(j, i);
-                        this.blocks.push(block);
+                        let brick = new ImageBlock(j, i, this.cellSize, BRICK);
+                        brick.setGridPosition(j, i);
+                        this.blocks.push(brick);
                     }
                     else if(cell == "P")
                     {
@@ -96,6 +99,12 @@ class GameBoard extends Grid {
                     {
                         this.pacman.setGridPosition(j, i);
                         this.pacman.setBounds(this.cols * this.cellSize, this.rows * this.cellSize)
+                    }
+                    else
+                    {
+                        let path = new ImageBlock(j, i, this.cellSize, grass);
+                        path.setGridPosition(j, i);
+                        this.blocks.push(path);
                     }
                 } 
             }

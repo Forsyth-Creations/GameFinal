@@ -14,7 +14,7 @@ class PuzzleIcon extends GridDefinedCharacter
         this.height = height
 
         this.isOpened = true
-        this.image = loadImage("assets/Icons/letter.png")
+        this.image = LETTER
         this.disabled = false
     }
 

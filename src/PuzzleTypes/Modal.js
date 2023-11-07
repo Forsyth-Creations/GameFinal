@@ -20,6 +20,9 @@ class PuzzleModal
 
     draw()
     {
+        if (this.state == "idle")
+
+        {
         let totalHeight = this.textArray.length * 20
 
         // draw a rectangle to hold it all
@@ -58,5 +61,27 @@ class PuzzleModal
             }
         }
     
+        }
+    }
+
+    reset()
+    {
+        this.state = "idle"
+    }
+
+    isCorrect()
+    {
+        return this.state == "correct"
+    }
+
+    isIncorrect()
+    {
+        return this.state == "incorrect"
+    }
+
+    remove()
+    {
+        
+        this.textArea.reset()
     }
 }

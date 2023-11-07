@@ -1,4 +1,8 @@
 // Variables
+let grass = null
+let LETTER = null
+let BRICK = null
+
 class GameState {
     constructor() {
         this.state = "opening_screen"
@@ -97,6 +101,7 @@ class GameState {
                 if (this.button.getState() == "pressed") {
                     this.state = "intro"
                     this.gameboard.resetAll()
+                    this.puzzle1.reset()
                 }
                 if (this.button2.getState() == "pressed") {
                     this.state = "instructions"
@@ -226,6 +231,19 @@ class GameState {
                 if (checkDist() < 1) {
                     this.puzzle1.draw()
                 }
+                else
+                {
+                    this.puzzle1.remove()
+                }
+
+                if (this.puzzle1.isCorrect()) {
+                    this.state = "win"
+                }
+                else if (this.puzzle1.isIncorrect()) {
+                    this.state = "game_over"
+                }
+
+
 
                 break;
             case "testing_ground":
@@ -256,6 +274,8 @@ class GameState {
                 textAlign(CENTER, CENTER);
                 fill(color(GAME_RED))
                 text("Game Over. Loser ;)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                text("For now, there is only one level", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50)
+                text("But, there will be more soon!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 100)
 
                 this.backButton.draw()
 
@@ -271,6 +291,8 @@ class GameState {
                 textAlign(CENTER, CENTER);
                 fill(color(GAME_YELLOW))
                 text("WINNER!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                text("For now, there is only one level", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50)
+                text("But, there will be more soon!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 100)
 
                 this.backButton.draw()
 
@@ -525,6 +547,13 @@ class PredictionQuad {
     isOnX() {
         return this.scanner[2] || this.scanner[3]
     }
+}
+
+function preload()
+{
+    grass = loadImage('assets/Scenary/grass.jpg');
+    LETTER = loadImage("assets/Icons/letter.png")
+    BRICK = loadImage("assets/Scenary/brick_3.png")
 }
 
 // Setup the canvas

@@ -59,7 +59,7 @@ const GAME_BOARD_1 =
     ["                                  BBBBBB"],
     ["      BB                          BBBB  "],
     [" BB                                     "],
-    ["  B    BBB  BBBBBB BBB BBBBBB          "],
+    ["  B    BBB  BBBBBB BBB BBBBBB           "],
     ["  BBBBBB         B BBB B    B  BBB  BBBB"],
     ["                 B BBB B    B  BBB  BBBB"],
     [" B     B         B BBB B            BBBB"],

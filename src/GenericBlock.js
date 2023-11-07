@@ -49,3 +49,21 @@ class GenericBlock extends GridDefinedCharacter {
         }
     }
 }
+
+class ImageBlock extends GenericBlock
+{
+    constructor(x, y, size, img)
+    {
+        super(x, y, size)
+        this.img = img
+    }
+
+    draw()
+    {
+        if (this.shown && this.img != null)
+        {
+            stroke(0);
+            image(this.img, this.x - this.size/2, this.y - this.size/2, this.size, this.size)
+        }
+    }
+}
