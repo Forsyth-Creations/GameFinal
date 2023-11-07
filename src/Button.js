@@ -75,4 +75,17 @@ class Button {
         this.state = "idle"
         this.locked = false
     }
+
+    isClicked()
+    {
+        if (this.state == "pressed")
+        {
+            this.reset()
+            return true
+        }
+        else
+        {
+            return false
+        }
+    }
 }

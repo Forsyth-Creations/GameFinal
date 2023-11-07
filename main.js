@@ -15,13 +15,41 @@ class GameState {
         this.pacman = new Pacman(5, SCREEN_HEIGHT - 50, GRID_BOX_SIZE)
         this.rock = new Rock(SCREEN_WIDTH / 1.35, SCREEN_HEIGHT / 1.5, GRID_BOX_SIZE, GAME_RED)
 
-        this.gameboard = new GameBoard(GRID_SIZE_XY, GRID_SIZE_XY, GRID_BOX_SIZE, 6)
+        this.gameboard = new GridMap(GAME_BOARD_1, GRID_BOX_SIZE, 8)
 
         // import screen 1 from /assets/Screens/Screen1.png
         this.screen1 = new FadeInScreen(loadImage("assets/Screens/Screen1.png"))
         this.hunt_logo = loadImage("assets/Logos/Hunt.png")
 
         this.gearButton = new IconButton(SCREEN_WIDTH - 50, 10, 40, 40, "assets/Icons/gear2.png")
+        
+        this.textarea_name = new TextArea(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 200, 30, 20, "Enter your name")
+        // submit name button
+        this.submit_name = new Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2 + 30, 100, 30, "Submit")
+        this.name = ""
+
+
+        // all the puzzles they need to solve
+        this.puzzle1_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
+        this.gameboard.injectElement(this.puzzle1_icon, 10, 10)
+        this.puzzle1 = new PuzzleModal(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 
+        ["Hello Adventurer,", 
+        "",
+        "It's good to meet you. My name is Overseer",
+        "Never have I seen such a worthy foe to take on my game!",
+        "",
+        "The game is simple: solve my puzzles",
+        "Hard? Oh yeah. But we have to keep you interested",
+        "Exciting, isn't it?",
+        "",
+        "Put your skills to the test, I know you can",
+        "Or fail. That's kinda your choice",
+        "Need help? You're not getting it",
+        "Do you know where the next puzzle is?",
+        "---------------------------------------",
+        "I've just told you above. Provide your answer below",
+        "All lower case, one word, please!"], "pond")
+
     }
 
     draw() {
@@ -67,7 +95,7 @@ class GameState {
 
 
                 if (this.button.getState() == "pressed") {
-                    this.state = "game"
+                    this.state = "intro"
                     this.gameboard.resetAll()
                 }
                 if (this.button2.getState() == "pressed") {
@@ -80,6 +108,26 @@ class GameState {
                 text("A virtual homage to the", SCREEN_WIDTH / 1.3, BOTTOM_OF_SCREEN - 120)
                 text("Virginia Tech Hunt", SCREEN_WIDTH / 1.3, BOTTOM_OF_SCREEN - 90)
 
+                break;
+            case "intro":
+                background(color(GAME_BLACK));
+                this.textarea_name.draw()
+                this.state = "waiting_for_name"
+                break;
+            case "waiting_for_name":
+                if (this.textarea_name.getValue() != "") {
+                    this.submit_name.draw()
+                }
+                
+                if (this.submit_name.getState() == "pressed") {
+                    this.name = this.textarea_name.getValue()
+                    this.state = "game"
+                    this.button.reset()
+                    this.button2.reset()
+                    this.backButton.reset()
+                    this.submit_name.reset()
+                    this.textarea_name.reset()
+                }
                 break;
             case "main_menu":
                 // code block
@@ -162,6 +210,22 @@ class GameState {
 
                 // feed the pacman grid positiong to the grid
                 this.gameboard.setPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
+
+
+                // draw a button bar with the name
+                fill(color(GAME_BLACK))
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
+                fill(color(GAME_WHITE))
+                textAlign(LEFT, CENTER);
+                text("Welcome, " + this.name + ". Overseer has left you a letter. Go find it", 10, BOTTOM_OF_SCREEN + 15)
+
+                // if the distance between the pacman and the puzzle is less than 1, then open the puzzle
+                let checkDist = () => {
+                    return Math.sqrt(Math.pow(this.gameboard.pacman.gridPosX - this.puzzle1_icon.gridPosX, 2) + Math.pow(this.gameboard.pacman.gridPosY - this.puzzle1_icon.gridPosY, 2))
+                }
+                if (checkDist() < 1) {
+                    this.puzzle1.draw()
+                }
 
                 break;
             case "testing_ground":
@@ -367,44 +431,6 @@ class SkewedCube {
     }
 }
 
-// 
-class Rock extends GridDefinedCharacter {
-    constructor(x, y, size) {
-        super(x, y)
-        this.size = size
-        this.shown = true
-    }
-
-    draw() {
-        if (this.shown) {
-            fill(color(GAME_GRAY))
-            beginShape();
-            vertex(this.x - this.size / 2, this.y + this.size / 2);
-            vertex(this.x - this.size / 2, this.y + this.size / 4);
-            vertex(this.x - this.size / 4, this.y + this.size / 4);
-            vertex(this.x - this.size / 4, this.y);
-            vertex(this.x - this.size / 4, this.y - this.size / 2);
-            vertex(this.x + this.size / 20, this.y - this.size / 2);
-            vertex(this.x + this.size / 20, this.y - this.size / 4);
-            vertex(this.x + this.size / 4, this.y - this.size / 4);
-            vertex(this.x + this.size / 4, this.y);
-            vertex(this.x + this.size / 2, this.y);
-            vertex(this.x + this.size / 2, this.y + this.size / 2);
-            endShape(CLOSE);
-
-            fill(color(GAME_DARK_GRAY))
-            beginShape();
-            vertex(this.x + this.size / 2, this.y + this.size / 2);
-            vertex(this.x + this.size / 2, this.y);
-            vertex(this.x + this.size / 4, this.y);
-            vertex(this.x + this.size / 4, this.y + this.size / 4);
-            vertex(this.x, this.y + this.size / 4);
-            vertex(this.x, this.y + this.size / 2);
-            endShape(CLOSE);
-        }
-
-    }
-}
 
 
 class PredictionQuad {
@@ -516,5 +542,6 @@ function setup() {
 }
 
 function draw() {
+    frameRate(30)
     game.draw()
 }

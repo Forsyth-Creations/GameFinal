@@ -28,10 +28,10 @@ class Grid {
                 noFill();
                 rect(x, y, this.cellSize, this.cellSize);
                 // write the grid location as text
-                fill(GAME_GRAY_HOVER);
-                textSize(12);
-                textAlign(CENTER, CENTER);
-                text(i + "," + j, x + this.cellSize / 2, y + this.cellSize / 2);
+                // fill(GAME_GRAY_HOVER);
+                // textSize(12);
+                // textAlign(CENTER, CENTER);
+                // text(i + "," + j, x + this.cellSize / 2, y + this.cellSize / 2);
             }
         }
     }
@@ -44,32 +44,67 @@ class Grid {
 }
 
 class GameBoard extends Grid {
-    constructor(rows, cols, cellSize, renderDistance) {
+    constructor(rows, cols, cellSize, renderDistance, bitmap = GAME_BOARD_1) {
         super(rows, cols, cellSize, renderDistance);
         this.grid = [];
         this.rocks = [];
+        this.blocks = [];
+        this.paths = [];
+        this.bitmap = bitmap;
         this.pacman = new Pacman(0, 0, this.cellSize);
         this.createElements();
     }
 
     createElements() {
-        for (let i = 0; i < GAME_BOARD_1.length; i++) {
-            let row = GAME_BOARD_1[i][0].split("");
-            for (let j = 0; j < row.length; j++) {
-                let cell = row[j];
-                if (cell == "C") {
-                    drawPrize(0, 0)
-                }
-                else if (cell == "S") {
-                    let rock = new Rock(j, i, this.cellSize);
-                    rock.setGridPosition(j, i);
-                    this.rocks.push(rock);
-                }
-                else if (cell == "P") {
-                    this.pacman.setGridPosition(j, i);
-                    this.pacman.setBounds(this.cols * this.cellSize, this.rows * this.cellSize)
-                }
+        for (let i = 0; i < this.bitmap.length; i++) {
+            try{
+                let row = this.bitmap[i][0].split("");
+                for (let j = 0; j < row.length; j++) {
+                    let cell = row[j];
+                    if (cell == "C") {
+                        drawPrize(0, 0)
+                    }
+                    else if (cell == "S") {
+                        let rock = new Rock(j, i, this.cellSize);
+                        rock.setGridPosition(j, i);
+                        this.rocks.push(rock);
+                    }
+                    else if(cell == "B")
+                    {
+                        let block = new GenericBlock(j, i, this.cellSize);
+                        block.setGridPosition(j, i);
+                        this.blocks.push(block);
+                    }
+                    else if(cell == "P")
+                    {
+                        let path = new GenericBlock(j, i, this.cellSize, GAME_PALE_YELLOW);
+                        path.setGridPosition(j, i);
+                        this.blocks.push(path);
+                    }
+                    else if(cell == "R")
+                    {
+                        let path = new GenericBlock(j, i, this.cellSize, GAME_BLACK);
+                        path.setGridPosition(j, i);
+                        this.blocks.push(path);
+                    }
+                    else if (cell == "W") {
+                        let path = new GenericBlock(j, i, this.cellSize, forsyth_blue);
+                        path.setGridPosition(j, i);
+                        this.blocks.push(path);
+                    }
+                    else if (cell == "M")
+                    {
+                        this.pacman.setGridPosition(j, i);
+                        this.pacman.setBounds(this.cols * this.cellSize, this.rows * this.cellSize)
+                    }
+                } 
             }
+            catch(error)
+            {
+                console.log("Error in GameBoard.createElements(): " + error)
+                console.log("I is: " + i)
+            }
+
         }
         this.pacman.setObstacles(this.rocks);
     }
@@ -77,6 +112,36 @@ class GameBoard extends Grid {
     draw() {
         super.draw();
 
+        this.pacman.move();
+        this.pacman.draw();
+    }
+
+    resetAll() {
+        this.rocks = []
+        this.pacman = new Pacman(0, 0, this.cellSize);
+        this.createElements()
+    }
+}
+
+class GridMap extends GameBoard
+{
+    constructor(bitmap, cellSize, renderDistance)
+    {
+        super(bitmap.length, bitmap[0][0].length, cellSize, renderDistance, bitmap);
+        console.log("GridMap constructor")
+        
+        // rows and columns
+        this.bitmap = bitmap;
+        this.grid = [];
+        this.rocks = [];
+        this.pacman = new Pacman(0, 0, this.cellSize);
+        this.createElements();
+
+        this.otherElements = [];
+    }
+
+    draw()
+    {
         let start_x = constrain(this.x_index - this.renderDistance, 0, this.cols - 1)
         let start_y = constrain(this.y_index - this.renderDistance, 0, this.rows - 1)
         let max_x = constrain(this.x_index + this.renderDistance, 0, this.cols)
@@ -90,19 +155,29 @@ class GameBoard extends Grid {
                         this.rocks[k].draw();
                     }
                 }
+                // draw the blocks
+                for (let k = 0; k < this.blocks.length; k++) {
+                    if (this.blocks[k].gridPosX == i && this.blocks[k].gridPosY == j) {
+                        this.blocks[k].draw();
+                    }
+                }
+                // draw the other elements
+                for (let k = 0; k < this.otherElements.length; k++) {
+                    if (this.otherElements[k].gridPosX == i && this.otherElements[k].gridPosY == j) {
+                        this.otherElements[k].draw();
+                    }
+                }
             }
         }
-
-        // for (let i = 0; i < this.rocks.length; i++) {
-        //     this.rocks[i].draw();
-        // }
-        this.pacman.move();
-        this.pacman.draw();
+        super.draw();
     }
 
-    resetAll() {
-        this.rocks = []
-        this.pacman = new Pacman(0, 0, this.cellSize);
-        this.createElements()
+    injectElement(element, x, y)
+    {
+        // inject an element into the grid
+        // x and y are the grid positions
+        element.setGridPosition(x, y);
+        this.otherElements.push(element);
     }
+    
 }

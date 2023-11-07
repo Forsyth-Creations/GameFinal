@@ -2,7 +2,7 @@
 const SCREEN_WIDTH = 500;
 const SCREEN_HEIGHT = SCREEN_WIDTH;
 const BOTTOM_OF_SCREEN = SCREEN_HEIGHT - 30;
-const FUDGE_FACTOR = 10;
+const COLOR_FUDGE_FACTOR = 10;
 
 
 const GRID_BOX_SIZE = 40; // size of a box in the grid
@@ -28,6 +28,7 @@ const GAME_GREEN = "#658864";
 const GAME_DARK_BLUE = "#00008B";
 const GAME_YELLOW = "#F0C808";
 const GAME_DARK_GRAY = "#317171";
+const GAME_PALE_YELLOW = "#F0E68C";
 
 var CUSTOM_ICON = null
 
@@ -36,45 +37,47 @@ var CUSTOM_ICON = null
 
 const GAME_BOARD_1 =
     [
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["          P SSS                         "],
-    ["                                        "],
-    ["                      S                 "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "],
-    ["                                        "]]
+    ["       BBB       B                      "],
+    ["       BBB       B                      "],
+    ["        B        B     BBBBBBB BB       "],
+    ["        BB    BBBBBBBB B     BBBB       "],
+    ["        BBBBBBBBBBBBBB B    BBBBB       "],
+    ["          B     BBBBBB         BB       "],
+    ["                 BBBBB                  "],
+    ["      BBB   BBB  BBBBB                  "],
+    ["      BBB                               "],
+    ["      BBB                               "],
+    ["           PPPPPPPPPPPPPPPPPPPP    BBB  "],
+    ["          PP                  PP   BBB  "],
+    ["WWW      PP            M       PP  BBB  "],
+    ["WWWW    PP                      PP   B  "],
+    ["WWW     P                        P   B  "],
+    ["W       PP                      PP   B  "],
+    ["         PP                    PP   BBBB"],
+    ["          PP                  PP  BBBBBB"],
+    ["   BBB     PPPPPPPPPPPPPPPPPPPP   BBBBBB"],
+    ["                                  BBBBBB"],
+    ["      BB                          BBBB  "],
+    [" BB                                     "],
+    ["  B    BBB  BBBBBB BBB BBBBBB          "],
+    ["  BBBBBB         B BBB B    B  BBB  BBBB"],
+    ["                 B BBB B    B  BBB  BBBB"],
+    [" B     B         B BBB B            BBBB"],
+    [" B     B   B       BBB B            BBBB"],
+    ["BB     B   BBBBBB  BBB              BBBB"],
+    ["       B                  BBBBB     BBBB"],
+    ["          BBBBB   BBBBB   BBBBB         "],
+    ["   BBB    BBBBB           BBBBB  BBB    "],
+    ["   BBB    BBBBB  B     B  BBBBB BB    BB"],
+    ["                 BBB BBB        B     BB"],
+    ["                                      BB"],
+    ["                             BBBB     BB"],
+    ["   BBB   BB B    B        B        B  BB"],
+    ["   B      B B   BB        B B      B  BB"],
+    ["   B      BBB   BB        B B      B  BB"],
+    ["   B      B B   BB        B        B  BB"],
+    ["   BB  BB B B   B  BBBBBB    BBBBB    BB"],
+    ["                   B    B             BB"]]
+
 
 // --- Game Board 2 ---
