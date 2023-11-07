@@ -32,10 +32,14 @@ class GameState {
         this.submit_name = new Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2 + 30, 100, 30, "Submit")
         this.name = ""
 
+        // basic npc
+        this.npc = new Npc(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GRID_BOX_SIZE, GAME_YELLOW)
 
         // all the puzzles they need to solve
         this.puzzle1_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
         this.gameboard.injectElement(this.puzzle1_icon, 10, 10)
+        this.gameboard.injectElement(this.npc, 12, 12)        
+
         this.puzzle1 = new PuzzleModal(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 
         ["Hello Adventurer,", 
         "",
@@ -190,6 +194,7 @@ class GameState {
 
                 break;
             case "game":
+                this.npc.setFocusGridPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
                 background(color(GAME_GREEN));
                 push()
                 translate(SCREEN_WIDTH / 2 - this.gameboard.pacman.x, SCREEN_HEIGHT / 2 - this.gameboard.pacman.y)
@@ -216,7 +221,6 @@ class GameState {
                 // feed the pacman grid positiong to the grid
                 this.gameboard.setPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
 
-
                 // draw a button bar with the name
                 fill(color(GAME_BLACK))
                 rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
@@ -226,9 +230,10 @@ class GameState {
 
                 // if the distance between the pacman and the puzzle is less than 1, then open the puzzle
                 let checkDist = () => {
-                    return Math.sqrt(Math.pow(this.gameboard.pacman.gridPosX - this.puzzle1_icon.gridPosX, 2) + Math.pow(this.gameboard.pacman.gridPosY - this.puzzle1_icon.gridPosY, 2))
+                    // see if the grid position of the pacman is the same as the puzzle
+                    return this.gameboard.pacman.gridPosX == this.puzzle1_icon.gridPosX && this.gameboard.pacman.gridPosY == this.puzzle1_icon.gridPosY
                 }
-                if (checkDist() < 1) {
+                if (checkDist()) {
                     this.puzzle1.draw()
                 }
                 else
@@ -243,8 +248,7 @@ class GameState {
                     this.state = "game_over"
                 }
 
-
-
+                this.npc.move()
                 break;
             case "testing_ground":
                 background(color(forsyth_blue));
@@ -571,6 +575,6 @@ function setup() {
 }
 
 function draw() {
-    frameRate(30)
+    frameRate(60)
     game.draw()
 }

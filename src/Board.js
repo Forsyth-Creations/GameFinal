@@ -123,6 +123,7 @@ class GameBoard extends Grid {
 
         this.pacman.move();
         this.pacman.draw();
+        this.pacman.calculateGridPosition();
     }
 
     resetAll() {
@@ -151,6 +152,8 @@ class GridMap extends GameBoard
 
     draw()
     {
+        super.draw();
+
         let start_x = constrain(this.x_index - this.renderDistance, 0, this.cols - 1)
         let start_y = constrain(this.y_index - this.renderDistance, 0, this.rows - 1)
         let max_x = constrain(this.x_index + this.renderDistance, 0, this.cols)
@@ -170,6 +173,11 @@ class GridMap extends GameBoard
                         this.blocks[k].draw();
                     }
                 }
+            }
+        }
+
+        for (let i = start_x; i < max_x && i < this.cols; i++) {
+            for (let j = start_y; j < max_y && j < this.rows; j++) {
                 // draw the other elements
                 for (let k = 0; k < this.otherElements.length; k++) {
                     if (this.otherElements[k].gridPosX == i && this.otherElements[k].gridPosY == j) {
@@ -178,7 +186,8 @@ class GridMap extends GameBoard
                 }
             }
         }
-        super.draw();
+        
+        this.pacman.draw();
     }
 
     injectElement(element, x, y)

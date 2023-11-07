@@ -21,6 +21,11 @@ class GridDefinedCharacter {
         this.y = y;
     }
 
+    calculateGridPosition() {
+        this.gridPosX = round(this.x / GRID_BOX_SIZE) - 1;
+        this.gridPosY = round(this.y / GRID_BOX_SIZE) - 1;
+    }
+
     setGridPosition(x, y) {
         this.x = x * GRID_BOX_SIZE + GRID_BOX_SIZE / 2;
         this.y = y * GRID_BOX_SIZE + GRID_BOX_SIZE / 2;
