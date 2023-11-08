@@ -6,6 +6,7 @@ let BRICK = null
 class GameState {
     constructor() {
         this.state = "opening_screen"
+        // this.state = "game"
         this.logo = new Logo(130, 100, 40, 50, color(GAME_BLACK), 2);
         this.button = new Button(20, BOTTOM_OF_SCREEN - 140, 50, 30, "Play");
         this.button2 = new Button(20, BOTTOM_OF_SCREEN - 100, 90, 30, "Instructions");
@@ -33,7 +34,14 @@ class GameState {
         this.name = ""
 
         // basic npc
-        this.npc = new Npc(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GRID_BOX_SIZE, GAME_YELLOW)
+        let pos1 = new BetterNode(12, 12, null, null)
+        let pos2 = new BetterNode(30, 12, null, null)
+        let pos3 = new BetterNode(30, 20, null, null)
+        let pos5 = new BetterNode(25, 30, null, null)
+        let pos4 = new BetterNode(14, 20, null, null)
+
+
+        this.npc = new WaypointNPC(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GRID_BOX_SIZE, [pos1, pos2, pos3, pos5, pos4])
 
         // all the puzzles they need to solve
         this.puzzle1_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
@@ -83,6 +91,7 @@ class GameState {
                 image(this.hunt_logo, 20, 20)
 
                 // Hacky way of getting it to move
+                this.pacman.speed = .5
                 this.pacman.y = SCREEN_HEIGHT - 50
                 this.pacman.state2 = "moving"
                 this.pacman.direction = 0
@@ -194,7 +203,7 @@ class GameState {
 
                 break;
             case "game":
-                this.npc.setFocusGridPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
+                // this.npc.setFocusGridPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
                 background(color(GAME_GREEN));
                 push()
                 translate(SCREEN_WIDTH / 2 - this.gameboard.pacman.x, SCREEN_HEIGHT / 2 - this.gameboard.pacman.y)
@@ -575,6 +584,6 @@ function setup() {
 }
 
 function draw() {
-    frameRate(60)
+    frameRate(30)
     game.draw()
 }

@@ -1,23 +1,16 @@
 class Npc extends GridDefinedCharacter {
-    constructor(x, y, radius, color, star_delay = 1000) {
+    constructor(x, y, size) {
         super(x, y)
-        this.radius = radius
-        this.color = color
-        this.vulnerable = false
+        this.size = size
         this.direction = 0
-        this.length = 0
-        this.speed = 0; // Ghost's movement speed
-        this.pacman = null
-        this.dead = false
-        this.pacman_x = null
-        this.pacman_y = null
-        this.pacman_grid_x = null
-        this.pacman_grid_y = null
-        this.star_delay = star_delay
+        this.speed = 0; // 
+        this.target = null
+        this.target_grid_x = null
+        this.target_grid_y = null
 
         this.a_star = new Star(GAME_BOARD_1)
         this.my_node = new BetterNode(this.gridPosX, this.gridPosY)
-        this.pacman_node = new BetterNode(this.pacman_grid_x, this.pacman_grid_y, null, true)
+        this.target_node = new BetterNode(this.target_grid_x, this.target_grid_y, null, true)
 
         this.path = []
 
@@ -32,43 +25,57 @@ class Npc extends GridDefinedCharacter {
 
     updateMyNodes() {
         this.my_node = new BetterNode(this.gridPosX, this.gridPosY)
-        this.pacman_node = new BetterNode(this.pacman_grid_x, this.pacman_grid_y, null, true)
+        this.target_node = new BetterNode(this.target_grid_x, this.target_grid_y, null, true)
     }
 
     fsm() {
         switch (this.move_state) {
             case "idle":
                 // stop moving to recheck the path
-                this.speed = 0
+                // this.speed = 0
                 this.calculateGridPosition()
                 this.updateMyNodes()
-                this.a_star.calculatePath(this.my_node, this.pacman_node)
+                this.a_star.calculatePath(this.my_node, this.target_node)
                 this.move_state = "checking"
                 this.my_millis = millis()
                 this.path = [...this.a_star.path]
                 break;
             case "checking":
                 this.move_state = "moving"
+
+                // write out all waypoints in the path
+                for (let i = 0; i < this.path.length; i++) {
+                    console.log(this.path[i].x + ", " + this.path[i].y)
+                }
+
+                // if (this.path.length == 2 && (this.gridPosX != this.target_grid_x || this.gridPosY != this.target_grid_y)) {
+                //     this.path.pop()
+                // }
+
                 this.my_target = this.path.pop()
+                console.log(this.my_target)
                 if (this.my_target != null && this.my_target.x == this.gridPosX && this.my_target.y == this.gridPosY) {
                     this.my_target = this.path.pop()
                 }
                 if (this.path.length == 0) {
+                    // append my target node
                     this.move_state = "idle"
+                }
+                if (this.my_target != null) {
+                    this.move_state = "moving"
                 }
                 this.calculateGridPosition()
 
                 break;
             case "moving":
                 // move to my target
-                this.speed = 1
+                // this.speed = 1
                 this.abstract_move()
 
                 if (this.isFirmlyInGrid()) {
                     this.move_state = "idle"
-                    this.speed = 0
+                    // this.speed = 0
                 }
-
                 break;
         }
     }
@@ -77,35 +84,30 @@ class Npc extends GridDefinedCharacter {
         if (this.my_target != null) {
             if (this.my_target.x < this.gridPosX) {
                 this.direction = PI
-                this.direction_x = -1;
-                this.direction_y = 0;
             }
             else if (this.my_target.x > this.gridPosX) {
                 this.direction = 0
-                this.direction_x = 1;
-                this.direction_y = 0;
             }
             else if (this.my_target.y < this.gridPosY) {
                 this.direction = 3 * PI / 2
-                this.direction_x = 0;
-                this.direction_y = -1;
             }
             else if (this.my_target.y > this.gridPosY) {
                 this.direction = PI / 2
-                this.direction_x = 0;
-                this.direction_y = 1;
+
             }
-            this.x = this.x + (this.direction_x * this.speed)
-            this.y = this.y + (this.direction_y * this.speed)
+            this.x = this.x + (cos(this.direction) * this.speed)
+            this.y = this.y + (sin(this.direction)* this.speed)
         }
     }
 
     draw() {
 
         // rect
-        fill(this.color)
-        rect(this.x - this.radius / 2, this.y - this.radius / 2, this.radius, this.radius)
+        fill(color(GAME_YELLOW))
+        rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
         noStroke()
+        fill(255)
+        // text(this.gridPosX + ", " + this.gridPosY, this.x + 20, this.y)
     }
 
     followPath() {
@@ -116,46 +118,33 @@ class Npc extends GridDefinedCharacter {
             if (next.x == this.gridPosX && next.y == this.gridPosY) {
                 next = this.path.pop()
             }
-
-            // contrain my x and y to be between my current position and the next node
-
-
             this.speed = 2
             // move toward the next node
             // slowly move from my current position to the next node
-
             if (next.x < this.gridPosX) {
                 this.direction = PI
-                this.direction_x = 1;
-                this.direction_y = 0;
             }
             else if (next.x > this.gridPosX) {
                 this.direction = 0
-                this.direction_x = -1;
-                this.direction_y = 0;
             }
             else if (next.y < this.gridPosY) {
                 this.direction = 3 * PI / 2
-                this.direction_x = 0;
-                this.direction_y = 1;
             }
             else if (next.y > this.gridPosY) {
                 this.direction = PI / 2
-                this.direction_x = 0;
-                this.direction_y = -1;
             }
 
             // create an initial move
-            this.x = this.x + (this.direction_x * this.speed)
-            this.y = this.y + (this.direction_y * this.speed)
+            this.x = this.x + (cos(this.direction) * this.speed)
+            this.y = this.y + (sin(this.direction) * this.speed)
         }
         if (this.isFirmlyInGrid()) {
             // this.speed = 0
             // this.direction = 0
         }
         else {
-            this.x = this.x - (this.direction_x * this.speed)
-            this.y = this.y - (this.direction_y * this.speed)
+            this.x = this.x - (cos(this.direction) * this.speed)
+            this.y = this.y - (sin(this.direction) * this.speed)
         }
 
     }
@@ -165,22 +154,100 @@ class Npc extends GridDefinedCharacter {
         noStroke()
     }
 
-
-    // Set position of hero
-
-    setFocusPosition(x, y) {
-        this.pacman_x = x
-        this.pacman_y = y
-    }
-
     setFocusGridPosition(x, y) {
-        this.pacman_grid_x = x
-        this.pacman_grid_y = y
+        this.target_grid_x = x
+        this.target_grid_y = y
+    }
+}
+
+class ComplexNpc extends Npc
+{
+    constructor(x, y, size, dir = "TopDownCharacter") {
+        super(x, y, size)
+
+        this.rightSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Right.png', 2)
+        this.leftSwatch = new LoadSwatch(0, 0, 'assets/Characters/' + dir + '/Character/Character_Left.png', 2)
+        this.upSwatch = new LoadSwatch(0, 0, 'assets/Characters/' + dir + '/Character/Character_Up.png', 2)
+        this.downSwatch = new LoadSwatch(0, 0, 'assets/Characters/' + dir + '/Character/Character_Down.png', 2)
+
+        this.animationCounter = 0
+        this.pedometer = 0
+        this.pedometer_switch_val = 5
+        this.animationStep = 0.1
     }
 
-    setWaypoints(waypoints) {
-        // must be a list of waypoints
-        this.waypoints = waypoints
+    draw()
+    {
+        this.animationCounter = this.animationCounter + this.animationStep
+        if (this.animationCounter > 3) {
+            this.animationCounter = 0
+        }
+        // rect
+        // noFill()
+        // rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
+        // noStroke()
+        // fill(255)
+        // text(this.gridPosX + ", " + this.gridPosY, this.x + 20, this.y)
+
+        this.handleAnimation()
+    }
+
+    handleAnimation() {
+        // draw the imag
+        push()
+        fill(color(GAME_BLACK))
+        translate(this.x - this.size * (3/4), this.y - this.size * (5/6))
+        if (this.direction == PI) {
+            this.leftSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // right arrow, set direction right and move right
+        else if (this.direction == 0) {
+            this.rightSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // up arrow, set direction up and move up
+        else if (this.direction == 3 * PI / 2) {
+            // up arrow
+            this.upSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        // down arrow, set direction down and move down
+        else if (this.direction == PI / 2) {
+            // down arrow
+            this.downSwatch.draw_index(round(this.animationCounter), 0, 0)
+        }
+        pop()
+    }
+
+}
+
+class WaypointNPC extends ComplexNpc
+{
+    constructor(x, y, size, points = [], dir = "TopDownCharacter") {
+        super(x, y, size, dir)
+        this.points = points
+        this.index = 0
+        this.speed = GRID_BOX_SIZE / 5
+    }
+
+    move()
+    {
+        // // if i'm at that point
+        // console.log(this.my_node)
+        // console.log(this.target_node)
+        if (this.points.length > 0 && this.gridPosX == this.points[this.index].x && this.gridPosY == this.points[this.index].y) {
+            this.index = this.index + 1
+            if (this.index >= this.points.length) {
+                this.index = 0 // allows it to loop
+                this.path = []
+            }
+            this.setFocusGridPosition(this.points[this.index].x, this.points[this.index].y)
+            this.updateMyNodes()
+            if (this.index >= this.points.length) {
+                this.index = 0
+                this.path = []
+            }
+        }
+        this.updateMyNodes()
+        super.move()
     }
 
 }

@@ -3,10 +3,8 @@ class Pacman extends GridDefinedCharacter {
         super(x, y)
         this.radius = radius / 2;
         this.mouthAngle = QUARTER_PI; // Start with an open mouth
-        this.speed = GRID_BOX_SIZE / 2; // Pacman's movement speed
+        this.speed = GRID_BOX_SIZE / 5; // Pacman's movement speed
         this.mouthSpeed = 5
-        this.direction_x = 0; // Direction of movement
-        this.direction_y = 0
         this.boundX = null;
         this.boundY = null;
         this.points = 0
@@ -23,7 +21,7 @@ class Pacman extends GridDefinedCharacter {
         this.boundX = ACTUAL_GRID_SIZE
         this.boundY = ACTUAL_GRID_SIZE
 
-        this.image = loadImage('assets/Characters/hero/hero.png');
+        // this.image = loadImage('assets/Characters/hero/hero.png');
 
         this.speaking = false
         this.speech = "Hello there"
@@ -35,45 +33,76 @@ class Pacman extends GridDefinedCharacter {
         this.downSwatch = new LoadSwatch(0, 0, 'assets/Characters/TopDownCharacter/Character/Character_Down.png', 2)
 
         this.animationCounter = 0
-        this.animationCounter = constrain(this.animationCounter, 0, 3)
 
         this.pedometer = 0
         this.pedometer_switch_val = 5
-        this.animationStep = 0.4
+        this.animationStep = 0.3
 
+        this.a_star = new Star(GAME_BOARD_1)
+
+        this.neighbors = []
+
+    }
+
+    somethingInFront() {
+        let myNode = new BetterNode(this.gridPosX, this.gridPosY, null)
+        let neighbors = this.a_star.getNeighbors(myNode)
+        let nothingInFront = false
+        // use my current direction to check if there is an obstacle in front of me
+        let nextPosX = round(this.gridPosX + cos(this.direction))
+        let nextPosY = round(this.gridPosY + sin(this.direction))
+        let nextNode = new BetterNode(nextPosX, nextPosY, null)
+
+        for (let i = 0; i < neighbors.length; i++) {
+            if (neighbors[i].x == nextNode.x && neighbors[i].y == nextNode.y) {
+                nothingInFront = true
+            }
+        }
+
+        return [!nothingInFront, nextNode]
     }
 
     fsm() {
         switch (this.state2) {
             case "idle":
-                this.animationCounter = 0
-                // wait until the user presses a key
-                if (this.cachedKey != null) {
-                    this.state2 = "moving"
-                    this.keyCheck()
-                }
-                else {
-                    this.speed = 0
+                this.checkKeyPressed()
+                // allow movement, but not reorientation
+                this.rotate_character()
+
+                if (this.cachedKey != null){
+                    let check = this.somethingInFront()
+                    // console.log(check)
+                    // I would like to move to
+                    if (!check[0]) {
+                        this.x = this.x + round(cos(this.direction)) * this.speed;
+                        this.y = this.y + round(sin(this.direction)) * this.speed;
+                        this.animationCounter = this.animationCounter + this.animationStep
+                        this.state2 = "moving"
+                        break;
+                    }
+                    // // if there is something in front of me, still allow me to rotate my character
+                    this.cachedKey = null
                 }
                 break;
             case "moving":
-                this.x = this.x + this.direction_x * this.speed;
-                this.y = this.y + this.direction_y * this.speed;
+                if (this.cachedKey == null && this.isFirmlyInGrid()) {
+                    console.log("Idle return")
+                    this.state2 = "idle"
+                }
+                
+                this.x = this.x + round(cos(this.direction)) * this.speed;
+                this.y = this.y + round(sin(this.direction)) * this.speed;
                 this.animationCounter = this.animationCounter + this.animationStep
 
                 this.applyBounds()
-                // print out the current grid position
+
                 if (this.isFirmlyInGrid()) {
-                    this.speed = 0
+                    this.state2 = "idle"
+                    this.animationCounter = 0
                 }
 
-                if (this.isFirmlyInGrid() && this.cachedKey == null) {
-                    this.state2 = "idle"
-                    this.speed = 0
-                }
-                else if (this.isFirmlyInGrid() && this.cachedKey != null) {
-                    this.keyCheck()
-                }
+
+
                 this.cachedKey = null
                 break;
             case "simIdle":
@@ -81,7 +110,7 @@ class Pacman extends GridDefinedCharacter {
                 this.pedometer = 0
                 this.state2 = "right"
                 this.direction = 0
-                this.speed = GRID_BOX_SIZE / 10
+                this.speed = GRID_BOX_SIZE / 20
                 break;
             case "right": 
                 this.pedometer = this.pedometer + this.speed
@@ -128,8 +157,9 @@ class Pacman extends GridDefinedCharacter {
                     this.pedometer = 0
                 }
                 break;
-
+            
         }
+        // console.log(this.state2)
     }
 
     handleAnimation() {
@@ -157,7 +187,7 @@ class Pacman extends GridDefinedCharacter {
         pop()
     }
 
-    keyCheck() {
+    rotate_character() {
         if (this.cachedKey == LEFT_ARROW) {
             this.direction = PI
         }
@@ -173,47 +203,29 @@ class Pacman extends GridDefinedCharacter {
         else if (this.cachedKey == DOWN_ARROW) {
             this.direction = PI / 2
         }
-        this.cachedKey = null
-        this.speed = GRID_BOX_SIZE / 5
-        this.direction_x = cos(this.direction);
-        this.direction_y = sin(this.direction);
     }
 
     move() {
-        this.checkKeyPressed()
+
+        // check the neigbors
+        this.calculateGridPosition()
+        let myNode = new BetterNode(this.gridPosX, this.gridPosY, null)
+        this.neighbors = this.a_star.getNeighbors(myNode)
+
+        // run the fsm
         this.fsm()
+
+        // write my current grid position
     }
 
 
     draw() {
         this.handleAnimation()
-
         if (this.animationCounter > 3) {
             this.animationCounter = 0
         }
-        if (this.speaking) {
-            // draw a speech bubble
-            push()
-            fill(color(GAME_WHITE))
-            stroke(color(GAME_BLACK))
-            strokeWeight(1)
-            translate(this.x - this.radius, this.y - this.radius)
-            rect(0, -GRID_BOX_SIZE, GRID_BOX_SIZE * 2, GRID_BOX_SIZE)
-            fill(color(GAME_BLACK))
-            noStroke()
-            textSize(10)
-            text(this.speech, GRID_BOX_SIZE, -GRID_BOX_SIZE / 2)
-            pop()
-        }
-    }
-
-    updateMouth() {
-        // Animate Pacman's mouth
-        this.mouthAngle = map(sin(frameCount * (1 / this.mouthSpeed)), -1, 1, QUARTER_PI, 0);
-    }
-
-    setEnemies(enemies) {
-        this.enemies = enemies
+        fill(255)
+        // text(this.gridPosX + ", " + this.gridPosY, this.x, this.y)
     }
 
     reset() {

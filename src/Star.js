@@ -2,7 +2,8 @@ function isOpen(x, y, tile_map) {
     if (x < 0 || x > GRID_COLUMNS - 1 || y < 0 || y > GRID_ROWS - 1) {
         return false
     }
-    return tile_map[y][x] != "B"
+    let val = tile_map[y][0].split("")[x]
+    return val != "B"
 }
 
 class BetterNode {
