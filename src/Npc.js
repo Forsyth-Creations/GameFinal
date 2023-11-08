@@ -225,7 +225,7 @@ class WaypointNPC extends ComplexNpc
         super(x, y, size, dir)
         this.points = points
         this.index = 0
-        this.speed = GRID_BOX_SIZE / 5
+        this.speed = GRID_BOX_SIZE / 10
     }
 
     move()
