@@ -42,18 +42,7 @@ class Npc extends GridDefinedCharacter {
                 break;
             case "checking":
                 this.move_state = "moving"
-
-                // write out all waypoints in the path
-                for (let i = 0; i < this.path.length; i++) {
-                    console.log(this.path[i].x + ", " + this.path[i].y)
-                }
-
-                // if (this.path.length == 2 && (this.gridPosX != this.target_grid_x || this.gridPosY != this.target_grid_y)) {
-                //     this.path.pop()
-                // }
-
                 this.my_target = this.path.pop()
-                console.log(this.my_target)
                 if (this.my_target != null && this.my_target.x == this.gridPosX && this.my_target.y == this.gridPosY) {
                     this.my_target = this.path.pop()
                 }
@@ -69,12 +58,9 @@ class Npc extends GridDefinedCharacter {
                 break;
             case "moving":
                 // move to my target
-                // this.speed = 1
                 this.abstract_move()
-
                 if (this.isFirmlyInGrid()) {
                     this.move_state = "idle"
-                    // this.speed = 0
                 }
                 break;
         }
@@ -231,8 +217,6 @@ class WaypointNPC extends ComplexNpc
     move()
     {
         // // if i'm at that point
-        // console.log(this.my_node)
-        // console.log(this.target_node)
         if (this.points.length > 0 && this.gridPosX == this.points[this.index].x && this.gridPosY == this.points[this.index].y) {
             this.index = this.index + 1
             if (this.index >= this.points.length) {

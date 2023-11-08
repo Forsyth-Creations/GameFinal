@@ -41,7 +41,7 @@ class PuzzleModal
         this.button.draw()
 
         // if the button is clicked, compare the value in the text area to the answer
-        if (this.button.isClicked())
+        if (this.button.isClicked() || this.textArea.locked)
         {
             if (this.textArea.getValue() == this.answer)
             {

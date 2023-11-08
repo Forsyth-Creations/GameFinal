@@ -10,7 +10,6 @@ class TextArea {
         this.placeholder = placeholder
         this.text = ""
         this.locked = false
-        this.myKey = null
 
         this.myTextArea = null
 
@@ -21,7 +20,7 @@ class TextArea {
     {
         // the text area only needs to be appended once
         // so we can use a finite state machine to handle this
-        if (this.state == "idle")
+        if (this.state == "idle" && this.locked == false)
         {
             this.myTextArea = document.createElement("textarea")
             this.myTextArea.style.position = "absolute"
@@ -42,17 +41,30 @@ class TextArea {
             document.body.appendChild(this.myTextArea)
             this.state = "waiting"
         }
-
     }
 
     draw()
     {
         this.fsm()
+        this.detectKey();
     }
 
     getValue()
     {
         return this.myTextArea.value
+    }
+
+    detectKey() {
+        if (this.myTextArea != null) {
+            this.myTextArea.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent the default Enter key behavior (adding a new line)
+                    this.locked = true;
+                } else {
+                    this.locked = false;
+                }
+            });
+        }
     }
 
     //reset and remove

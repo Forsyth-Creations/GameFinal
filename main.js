@@ -137,7 +137,7 @@ class GameState {
                     this.submit_name.draw()
                 }
                 
-                if (this.submit_name.getState() == "pressed") {
+                if (this.submit_name.getState() == "pressed" || this.textarea_name.locked) {
                     this.name = this.textarea_name.getValue()
                     this.state = "game"
                     this.button.reset()
