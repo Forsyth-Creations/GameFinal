@@ -75,6 +75,7 @@ class TextArea {
             this.myTextArea.value = ""
             this.myTextArea.remove()
             this.state = "idle"
+            this.locked = false
         }
     }
 
