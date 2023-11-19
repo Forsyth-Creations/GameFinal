@@ -10,3 +10,4 @@ https://www.artstation.com/artwork/okqWq
 
 # Reducing assets
 https://www.iloveimg.com/resize-image
+https://www.deviantart.com/trarian/art/Water-Texture-8-bit-905860542

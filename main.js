@@ -27,10 +27,10 @@ class GameState {
         this.hunt_logo = loadImage("assets/Logos/Hunt.png")
 
         this.gearButton = new IconButton(SCREEN_WIDTH - 50, 10, 40, 40, "assets/Icons/gear2.png")
-        
-        this.textarea_name = new TextArea(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 200, 30, 20, "Enter your name")
+
+        this.textarea_name = new TextArea(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 30, 20, "Enter your name")
         // submit name button
-        this.submit_name = new Button(SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2 + 30, 100, 30, "Submit")
+        this.submit_name = new Button(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 30, 100, 30, "Submit")
         this.name = ""
 
         // basic npc
@@ -42,34 +42,123 @@ class GameState {
 
 
         this.npc = new WaypointNPC(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GRID_BOX_SIZE, [pos1, pos2, pos3, pos5, pos4])
+        this.gameboard.injectElement(this.npc, 12, 12)
 
-        // all the puzzles they need to solve
+        // ------------------------------- Puzzles -------------------------------
+
         this.puzzle1_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
+        this.puzzle1_icon.disabled = true
         this.gameboard.injectElement(this.puzzle1_icon, 10, 10)
-        this.gameboard.injectElement(this.npc, 12, 12)        
+        this.puzzle1 = new PuzzleModal(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+            ["Hello Adventurer,",
+                "",
+                "It's good to meet you. My name is Overseer",
+                "Never have I seen such a worthy foe to take on my game!",
+                "",
+                "The game is simple: solve my puzzles",
+                "Hard? Oh yeah. But we have to keep you interested",
+                "Exciting, isn't it?",
+                "",
+                "Put your skills to the test, I know you can",
+                "Or fail. That's kinda your choice",
+                "Need help? You're not getting it",
+                "Do you know where the next puzzle is?",
+                "---------------------------------------",
+                "I've just told you above. Provide your answer below",
+                "All lower case, one word, please!"], "pond")
 
-        this.puzzle1 = new PuzzleModal(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 
-        ["Hello Adventurer,", 
-        "",
-        "It's good to meet you. My name is Overseer",
-        "Never have I seen such a worthy foe to take on my game!",
-        "",
-        "The game is simple: solve my puzzles",
-        "Hard? Oh yeah. But we have to keep you interested",
-        "Exciting, isn't it?",
-        "",
-        "Put your skills to the test, I know you can",
-        "Or fail. That's kinda your choice",
-        "Need help? You're not getting it",
-        "Do you know where the next puzzle is?",
-        "---------------------------------------",
-        "I've just told you above. Provide your answer below",
-        "All lower case, one word, please!"], "pond")
+        this.puzzle2_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
+        this.puzzle2_icon.disabled = true
+        this.gameboard.injectElement(this.puzzle2_icon, 0, 13)
+        this.puzzle2 = new PuzzleModal(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+            ["The answer is sheep"], "sheep")
+
+        this.which_puzzle = 0
 
     }
 
     draw() {
         this.fsm()
+    }
+
+
+    puzzleFSM() {
+
+        let checkDist = (me) => {
+            // see if the grid position of the pacman is the same as the puzzle
+            return this.gameboard.pacman.gridPosX == me.gridPosX && this.gameboard.pacman.gridPosY == me.gridPosY
+        }
+
+        switch (this.which_puzzle) {
+            case 0:
+                // draw a button bar with the name
+                this.puzzle1.disabled = false
+                this.puzzle1_icon.disabled = false
+                console.log("0")
+                fill(color(GAME_BLACK))
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
+                fill(color(GAME_WHITE))
+                textAlign(LEFT, CENTER);
+                text("Welcome, " + this.name + ". Overseer has left you a letter. Go find it", 10, BOTTOM_OF_SCREEN + 15)
+
+                if (checkDist(this.puzzle1_icon)) {
+                    this.puzzle1.draw()
+                }
+                else {
+                    this.puzzle1.remove()
+                }
+
+                if (this.puzzle1.isCorrect()) {
+                    this.puzzle1.disabled = true
+                    this.puzzle1_icon.disabled = true
+                    this.which_puzzle = 1
+                }
+
+                else if (this.puzzle1.isIncorrect()) {
+                    this.state = "game_over"
+                }
+
+                break;
+            case 1:
+                this.puzzle2.disabled = false
+                this.puzzle2_icon.disabled = false
+                fill(color(GAME_BLACK))
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
+                fill(color(GAME_WHITE))
+                textAlign(LEFT, CENTER);
+                text("Hurry!!! To the pond!!!!!", 10, BOTTOM_OF_SCREEN + 15)
+
+                if (checkDist(this.puzzle2_icon)) {
+                    this.puzzle2.draw()
+                }
+
+                else {
+                    this.puzzle2.remove()
+                }
+
+                if (this.puzzle2.isCorrect()) {
+                    this.puzzle2.disabled = true
+                    this.puzzle2_icon.disabled = true
+                    this.which_puzzle = 2
+                }
+
+                else if (this.puzzle2.isIncorrect()) {
+                    this.state = "game_over"
+                }
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+                console.log("End")
+                break;
+        }
     }
 
     fsm() {
@@ -136,7 +225,7 @@ class GameState {
                 if (this.textarea_name.getValue() != "") {
                     this.submit_name.draw()
                 }
-                
+
                 if (this.submit_name.getState() == "pressed" || this.textarea_name.locked) {
                     this.name = this.textarea_name.getValue()
                     this.state = "game"
@@ -208,12 +297,14 @@ class GameState {
                 push()
                 translate(SCREEN_WIDTH / 2 - this.gameboard.pacman.x, SCREEN_HEIGHT / 2 - this.gameboard.pacman.y)
                 this.gameboard.draw()
+
                 if (this.backButton.getState() == "pressed") {
                     this.state = "start"
                     this.button.reset()
                     this.button2.reset()
                     // this.button3.reset()
                     this.backButton.reset()
+                    this.puzzle1.remove()
                 }
                 pop()
                 this.backButton.draw()
@@ -229,34 +320,7 @@ class GameState {
 
                 // feed the pacman grid positiong to the grid
                 this.gameboard.setPosition(this.gameboard.pacman.gridPosX, this.gameboard.pacman.gridPosY)
-
-                // draw a button bar with the name
-                fill(color(GAME_BLACK))
-                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
-                fill(color(GAME_WHITE))
-                textAlign(LEFT, CENTER);
-                text("Welcome, " + this.name + ". Overseer has left you a letter. Go find it", 10, BOTTOM_OF_SCREEN + 15)
-
-                // if the distance between the pacman and the puzzle is less than 1, then open the puzzle
-                let checkDist = () => {
-                    // see if the grid position of the pacman is the same as the puzzle
-                    return this.gameboard.pacman.gridPosX == this.puzzle1_icon.gridPosX && this.gameboard.pacman.gridPosY == this.puzzle1_icon.gridPosY
-                }
-                if (checkDist()) {
-                    this.puzzle1.draw()
-                }
-                else
-                {
-                    this.puzzle1.remove()
-                }
-
-                if (this.puzzle1.isCorrect()) {
-                    this.state = "win"
-                }
-                else if (this.puzzle1.isIncorrect()) {
-                    this.state = "game_over"
-                }
-
+                this.puzzleFSM()
                 this.npc.move()
                 break;
             case "testing_ground":
@@ -562,8 +626,7 @@ class PredictionQuad {
     }
 }
 
-function preload()
-{
+function preload() {
     grass = loadImage('assets/Scenary/grass.jpg');
     LETTER = loadImage("assets/Icons/letter.png")
     BRICK = loadImage("assets/Scenary/brick_3.png")

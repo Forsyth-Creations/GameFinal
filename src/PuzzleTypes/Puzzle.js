@@ -3,10 +3,8 @@
 // there are functions to open and close the letter
 // as well as to lock it so it can't be opened
 
-class PuzzleIcon extends GridDefinedCharacter
-{
-    constructor(x, y, width, height)
-    {
+class PuzzleIcon extends GridDefinedCharacter {
+    constructor(x, y, width, height) {
         super(x, y)
         this.x = x
         this.y = y
@@ -18,27 +16,21 @@ class PuzzleIcon extends GridDefinedCharacter
         this.disabled = false
     }
 
-    draw()
-    {
+    draw() {
         //calculate the width based on the frame of the game
-        if (this.disabled)
-        {
-            return
-        }
+        if (!this.disabled) {
+            let tempWidth = sin(frameCount / 30) * GRID_BOX_SIZE * (3 / 4)
 
-        let tempWidth = sin(frameCount / 30) * GRID_BOX_SIZE * (3/4)
-        
-        // draw the letter
-        image(this.image, this.x - tempWidth/2, this.y - GRID_BOX_SIZE/2 + 5, tempWidth, GRID_BOX_SIZE * (3/4))
+            // draw the letter
+            image(this.image, this.x - tempWidth / 2, this.y - GRID_BOX_SIZE / 2 + 5, tempWidth, GRID_BOX_SIZE * (3 / 4))
+        }
     }
 
-    disable()
-    {
+    disable() {
         this.disabled = true
     }
 
-    reset()
-    {
+    reset() {
         this.disabled = false
     }
 }
