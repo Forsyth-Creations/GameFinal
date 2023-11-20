@@ -256,4 +256,48 @@ class WaypointNPC extends ComplexNpc
         this.speed = GRID_BOX_SIZE / 10
     }
 
+    draw()
+    {
+        super.draw()
+    }
+
+    say(str)
+    {
+        // console.log(this.x, this.y)
+        // write it as text
+        push()
+        fill(color(GAME_WHITE))
+        rect( 20, 250, 360, 50)
+        fill(color(GAME_WHITE))
+        textAlign(LEFT, CENTER);
+        textSize(12)
+        fill(color(GAME_BLACK))
+
+        // wrap the text if it's too long
+        let words = str.split(" ")
+        let line = ""
+        let lines = []
+        for (let i = 0; i < words.length; i++)
+        {
+            if (textWidth(line + words[i]) < 300)
+            {
+                line = line + words[i] + " "
+            }
+            else
+            {
+                lines.push(line)
+                line = words[i] + " "
+            }
+        }
+        lines.push(line)
+
+        for (let i = 0; i < lines.length; i++)
+        {
+            text(lines[i], 30, 260 + i * 15)
+        }
+
+        pop()
+
+    }
+
 }

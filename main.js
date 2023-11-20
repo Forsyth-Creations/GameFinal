@@ -94,6 +94,8 @@ class GameState {
             "Don't get it wrong"], "Overseer", "Good. To Ware Lab!")
         this.gameboard.injectElement(this.fullPuzzle4.myIcon, 38, 3)
 
+        this.winner_counter = 0
+
     }
 
     draw() {
@@ -165,7 +167,7 @@ class GameState {
 
                 break;
             case 4:
-                console.log("End")
+                console.log("Find Overseer")
                 break;
         }
     }
@@ -314,6 +316,12 @@ class GameState {
                     // this.button3.reset()
                     this.backButton.reset()
                     // this.puzzle1.remove()
+                    this.winner_counter = 0
+                    this.which_puzzle = 0
+                    this.fullPuzzle1.reset()
+                    this.fullPuzzle2.reset()
+                    this.fullPuzzle3.reset()
+                    this.fullPuzzle4.reset()
                 }
                 pop()
                 this.backButton.draw()
@@ -333,8 +341,19 @@ class GameState {
 
                 // if the distance between the npc and the pacman is less than 5, then stop the npc
                 let distance = dist(this.npc.x, this.npc.y, this.gameboard.pacman.x, this.gameboard.pacman.y)
-                if (distance < GRID_BOX_SIZE* 3 && this.npc.isFirmlyInGrid()) {
+                if (distance < GRID_BOX_SIZE* 2 && this.npc.isFirmlyInGrid()) {
                     this.npc.stop()
+                    if (this.which_puzzle == 4) {
+                        this.npc.say("Congrats on finishing my game. You're a winner! I'll give you some time to read this, but then I'll gift you a wonderful winners screen!")
+                        this.winner_counter += 1
+                        if (this.winner_counter > 100) {
+                            this.state = "win"
+                        }
+                    }
+                    else
+                    {
+                        this.npc.say("Hello there! Have you seen my dog? Here Cipher! Here boy!")
+                    }
                 }
                 else {
                     this.npc.go()
