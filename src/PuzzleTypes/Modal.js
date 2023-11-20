@@ -23,13 +23,16 @@ class PuzzleModal
         if (this.state == "idle")
 
         {
-        let totalHeight = this.textArray.length * 20
+        let totalHeight = this.textArray.length * 20 + 20
 
         // draw a rectangle to hold it all
         fill(255)
         rect(this.offset, this.offset, SCREEN_WIDTH - 2*this.offset, totalHeight)
 
         let height = 0
+        push()
+        // align text on the left
+        textAlign(LEFT, TOP)
         for (let i = 0; i < this.textArray.length; i++)
         {
             fill(0)
@@ -39,6 +42,7 @@ class PuzzleModal
 
         this.textArea.draw()
         this.button.draw()
+        pop()
 
         // if the button is clicked, compare the value in the text area to the answer
         if (this.button.isClicked() || this.textArea.locked)

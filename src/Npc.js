@@ -160,6 +160,7 @@ class ComplexNpc extends Npc
         this.pedometer = 0
         this.pedometer_switch_val = 5
         this.animationStep = 0.1
+        this.pauseDraw = false
     }
 
     draw()
@@ -174,8 +175,15 @@ class ComplexNpc extends Npc
         // noStroke()
         // fill(255)
         // text(this.gridPosX + ", " + this.gridPosY, this.x + 20, this.y)
-
+        if (!this.pauseDraw)
+        {
         this.handleAnimation()
+        }
+        else
+        {
+            this.animationCounter = 0
+            this.handleAnimation()
+        }
     }
 
     handleAnimation() {
@@ -232,6 +240,20 @@ class WaypointNPC extends ComplexNpc
         }
         this.updateMyNodes()
         super.move()
+    }
+
+    stop()
+    {
+        this.pauseDraw = true
+        if (this.isFirmlyInGrid()) {
+            this.speed = 0
+        }
+    }
+
+    go()
+    {
+        this.pauseDraw = false
+        this.speed = GRID_BOX_SIZE / 10
     }
 
 }
