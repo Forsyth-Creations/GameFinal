@@ -46,6 +46,7 @@ class GameState {
 
         // ------------------------------- Puzzles -------------------------------
 
+        // Puzzle 1
         this.puzzle1_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
         this.puzzle1_icon.disabled = true
         this.gameboard.injectElement(this.puzzle1_icon, 10, 10)
@@ -67,6 +68,7 @@ class GameState {
                 "I've just told you above. Provide your answer below",
                 "All lower case, one word, please!"], "pond")
 
+        // Puzzle 2
         this.puzzle2_icon = new PuzzleIcon(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200)
         this.puzzle2_icon.disabled = true
         this.gameboard.injectElement(this.puzzle2_icon, 0, 13)
