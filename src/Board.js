@@ -80,7 +80,7 @@ class GameBoard extends Grid {
                     }
                     else if(cell == "P")
                     {
-                        let path = new GenericBlock(j, i, this.cellSize, GAME_PALE_YELLOW);
+                        let path = new ImageBlock(j, i, this.cellSize, PATH);
                         path.setGridPosition(j, i);
                         this.blocks.push(path);
                     }
@@ -91,7 +91,7 @@ class GameBoard extends Grid {
                         this.blocks.push(path);
                     }
                     else if (cell == "W") {
-                        let path = new GenericBlock(j, i, this.cellSize, forsyth_blue);
+                        let path = new ImageBlock(j, i, this.cellSize, WATER)
                         path.setGridPosition(j, i);
                         this.blocks.push(path);
                     }
@@ -99,6 +99,11 @@ class GameBoard extends Grid {
                     {
                         this.pacman.setGridPosition(j, i);
                         this.pacman.setBounds(this.cols * this.cellSize, this.rows * this.cellSize)
+
+                        // add in grass behind him
+                        let path = new ImageBlock(j, i, this.cellSize, grass);
+                        path.setGridPosition(j, i);
+                        this.blocks.push(path);
                     }
                     else
                     {

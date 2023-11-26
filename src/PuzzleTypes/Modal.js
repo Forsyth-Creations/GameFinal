@@ -85,7 +85,6 @@ class PuzzleModal
 
     remove()
     {
-        
         this.textArea.reset()
     }
 }

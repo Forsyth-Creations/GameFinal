@@ -62,7 +62,7 @@ class ImageBlock extends GenericBlock
     {
         if (this.shown && this.img != null)
         {
-            stroke(0);
+            // stroke(0);
             image(this.img, this.x - this.size/2, this.y - this.size/2, this.size, this.size)
         }
     }
