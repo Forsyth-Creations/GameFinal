@@ -108,26 +108,25 @@ class GameState {
     puzzleFSM() {
         switch (this.which_puzzle) {
             case 0:
-                this.fullPuzzle1.checkDist(this.gameboard.pacman)
-                this.fullPuzzle1.enable()
-                this.fullPuzzle1.subtext = "Welcome, " + this.name + ". Overseer has left you a letter. Go find it"
                 // draw a button bar with the name
                 if (this.fullPuzzle1.isCorrect()) {
                     this.fullPuzzle1.reset()
                     this.which_puzzle = 1
                 }
-
                 else if (this.fullPuzzle1.isIncorrect()) {
                     this.state = "game_over"
                 }
+                else {
+                    this.fullPuzzle1.checkDist(this.gameboard.pacman)
+                    this.fullPuzzle1.enable()
+                    this.fullPuzzle1.subtext = "Welcome, " + this.name + ". Overseer has left you a letter. Go find it"
+                    this.fullPuzzle1.draw()
+                }
 
-                this.fullPuzzle1.draw()
 
                 break;
             case 1:
-                this.fullPuzzle2.checkDist(this.gameboard.pacman)
-                this.fullPuzzle2.enable()
-                // draw a button bar with the name
+
                 if (this.fullPuzzle2.isCorrect()) {
                     this.fullPuzzle2.reset()
                     this.which_puzzle = 2
@@ -136,12 +135,14 @@ class GameState {
                 else if (this.fullPuzzle2.isIncorrect()) {
                     this.state = "game_over"
                 }
-                this.fullPuzzle2.draw()
+                else
+                {
+                    this.fullPuzzle2.checkDist(this.gameboard.pacman)
+                    this.fullPuzzle2.enable()
+                    this.fullPuzzle2.draw()
+                }
                 break;
             case 2:
-                this.fullPuzzle3.checkDist(this.gameboard.pacman)
-                this.fullPuzzle3.enable()
-                // draw a button bar with the name
                 if (this.fullPuzzle3.isCorrect()) {
                     this.fullPuzzle3.reset()
                     this.which_puzzle = 3
@@ -150,13 +151,15 @@ class GameState {
                 else if (this.fullPuzzle3.isIncorrect()) {
                     this.state = "game_over"
                 }
-                this.fullPuzzle3.draw()
+                else
+                {
+                    this.fullPuzzle3.checkDist(this.gameboard.pacman)
+                    this.fullPuzzle3.enable()
+                    this.fullPuzzle3.draw()
+                }
 
                 break;
             case 3:
-                this.fullPuzzle4.checkDist(this.gameboard.pacman)
-                this.fullPuzzle4.enable()
-                // draw a button bar with the name
                 if (this.fullPuzzle4.isCorrect()) {
                     this.fullPuzzle4.reset()
                     this.which_puzzle = 4
@@ -165,11 +168,23 @@ class GameState {
                 else if (this.fullPuzzle4.isIncorrect()) {
                     this.state = "game_over"
                 }
-                this.fullPuzzle4.draw()
+                else
+                {
+                    this.fullPuzzle4.checkDist(this.gameboard.pacman)
+                    this.fullPuzzle4.enable()
+                    this.fullPuzzle4.draw()
+                }
 
                 break;
             case 4:
-                console.log("Find Overseer")
+                // write the text at the bottom of the screen
+                push()
+                fill(color(GAME_BLACK))
+                rect(0, BOTTOM_OF_SCREEN, SCREEN_WIDTH, 30)
+                fill(color(GAME_WHITE))
+                textAlign(LEFT, CENTER);
+                text("Find Overseer!", 10, BOTTOM_OF_SCREEN + 15)
+                pop()
                 break;
         }
     }
@@ -192,6 +207,7 @@ class GameState {
             case "start":
                 // reset all the puzzles
                 this.resetAllPuzzles()
+                this.which_puzzle = 0  // reset the puzzle counter
 
                 background(color(GAME_BLACK));
                 // this.logo.draw();
@@ -336,8 +352,6 @@ class GameState {
                     this.fullPuzzle2.reset()
                     this.fullPuzzle3.reset()
                     this.fullPuzzle4.reset()
-
-                    console.log("Attempting to reset the game")
                 }
                 pop()
                 this.backButton.draw()

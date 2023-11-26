@@ -136,7 +136,6 @@ class Star {
 
     draw() {
         // create new GridDefinedCharacter
-        console.log("Drawing")
         for (let i = 0; i < this.path; i++) {
             let node = this.path[i]
             fill(0, 255, 0)

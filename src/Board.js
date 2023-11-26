@@ -6,7 +6,6 @@ class Grid {
         this.renderDistance = renderDistance;
 
         this.image = image
-        console.log("Render distance: " + this.renderDistance)
 
         this.x_index = 0
         this.y_index = 0

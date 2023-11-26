@@ -86,7 +86,7 @@ class Pacman extends GridDefinedCharacter {
                 break;
             case "moving":
                 if (this.cachedKey == null && this.isFirmlyInGrid()) {
-                    console.log("Idle return")
+                    // console.log("Idle return")
                     this.state2 = "idle"
                 }
                 

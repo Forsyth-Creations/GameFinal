@@ -37,15 +37,7 @@ class FullPuzzle {
 
     reset() {
         this.myPuzzle.remove()
-        // remove the text area 
-        this.myPuzzle.textArea.reset()
-        this.myPuzzle.reset()
-        this.myIcon.reset()
-        this.myPuzzle.disabled = true
         this.myIcon.disabled = true
-        // this.myPuzzle.isActive = false
-        // this.isActive = false
-        // this.myPuzzle.state = "idle"
     }
 
     enable() {
