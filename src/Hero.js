@@ -35,7 +35,7 @@ class Pacman extends GridDefinedCharacter {
         this.animationCounter = 0
 
         this.pedometer = 0
-        this.pedometer_switch_val = 5
+        this.pedometer_switch_val = GRID_BOX_SIZE 
         this.animationStep = 0.3
 
         this.a_star = new Star(GAME_BOARD_1)
@@ -86,7 +86,6 @@ class Pacman extends GridDefinedCharacter {
                 break;
             case "moving":
                 if (this.cachedKey == null && this.isFirmlyInGrid()) {
-                    // console.log("Idle return")
                     this.state2 = "idle"
                 }
                 
@@ -159,7 +158,8 @@ class Pacman extends GridDefinedCharacter {
                 break;
             
         }
-        // console.log(this.state2)
+        console.log(this.state2)
+        console.log(this.pedometer)
     }
 
     handleAnimation() {

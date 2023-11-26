@@ -246,6 +246,7 @@ class GameState {
                 if (this.button2.getState() == "pressed") {
                     this.state = "instructions"
                     this.pacman.setPosition(SCREEN_WIDTH * (3 / 4), SCREEN_HEIGHT * (3 / 4))
+                    console.log("Changing state to instructions")
                     this.pacman.state2 = "simIdle"
                 }
 
@@ -306,9 +307,10 @@ class GameState {
                     this.button2.reset()
                     this.backButton.reset()
                 }
+
+                this.pacman.fsm()
                 this.pacman.draw()
                 this.pacman.handleAnimation()
-                this.pacman.fsm()
 
                 fill(255)
                 // align text left
