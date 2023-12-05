@@ -158,8 +158,6 @@ class Pacman extends GridDefinedCharacter {
                 break;
             
         }
-        console.log(this.state2)
-        console.log(this.pedometer)
     }
 
     handleAnimation() {

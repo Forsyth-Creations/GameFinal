@@ -246,7 +246,7 @@ class GameState {
                 if (this.button2.getState() == "pressed") {
                     this.state = "instructions"
                     this.pacman.setPosition(SCREEN_WIDTH * (3 / 4), SCREEN_HEIGHT * (3 / 4))
-                    console.log("Changing state to instructions")
+                    // console.log("Changing state to instructions")
                     this.pacman.state2 = "simIdle"
                 }
 

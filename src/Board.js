@@ -115,7 +115,7 @@ class GameBoard extends Grid {
             catch(error)
             {
                 console.log("Error in GameBoard.createElements(): " + error)
-                console.log("I is: " + i)
+                // console.log("I is: " + i)
             }
 
         }
@@ -142,7 +142,7 @@ class GridMap extends GameBoard
     constructor(bitmap, cellSize, renderDistance)
     {
         super(bitmap.length, bitmap[0][0].length, cellSize, renderDistance, bitmap);
-        console.log("GridMap constructor")
+        // console.log("GridMap constructor")
         
         // rows and columns
         this.bitmap = bitmap;
